@@ -1,5 +1,5 @@
 #This is a class test script that on master branch
-# change1 in master br
+# This is the change on b1 branch
 
 class FooClass(object):
     """my very first class: FooClass"""
