@@ -1,0 +1,10 @@
+#!/bin/sh
+remtstm_abis  tstm3_4 8012 create ho1_pool40_bsic4_ncell10 mobprof_pool.tsm 10 9000 4 0 1
+remtstm_abis  tstm3_4 8012 create no_ho_pool40_ncell10 mobprof_pool.tsm 10 0 0 0 0
+remtstm_abis  tstm3_4 8012 create moc_ms_40 ms_moc.tsm Nom4500_ETH_Abis_MsDb_Mx10A 3441 240
+remtstm_abis  tstm3_4 8012 create mtc_40 ms_mtc.tsm Nom4500_ETH_Abis_MsDb_Mx10A 9041 240
+remtstm_abis  tstm3_4 8012 create moc_fix_40 ms_moc.tsm Nom4500_ETH_Abis_MsDb_Mx10A 12921 120
+remtstm_abis  tstm3_4 8012 create lu_40 ms_lu.tsm Nom4500_ETH_Abis_MsDb_Mx10A 15721 120
+remtstm_abis  tstm3_4 8012 create mtsms_40 ms_mtsms.tsm Nom4500_ETH_Abis_MsDb_Mx10A 19381 180
+remtstm_abis  tstm3_4 8012 create moc_sms_40 ms_mosms.tsm Nom4500_ETH_Abis_MsDb_Mx10A 23581 180
+exit

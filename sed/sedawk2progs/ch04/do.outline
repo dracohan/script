@@ -1,0 +1,6 @@
+#! /bin/sh
+sed -n '
+s/"//g
+s/^\.Se /CHAPTER /p
+s/^\.Ah /	A. /p
+s/^\.Bh /		B.  /p' $*

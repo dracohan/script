@@ -1,0 +1,5 @@
+#! /bin/sh
+# index.edit -- compile list of index entries for editing.
+grep "^\.XX" $* | sort -u |
+sed '
+s/^\.XX \(.*\)$/\/^\\.XX \/s\/\1\/\1\//'

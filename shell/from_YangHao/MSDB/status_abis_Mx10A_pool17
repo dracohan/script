@@ -1,0 +1,8 @@
+#!/bin/sh
+remtstm_abis tstm2_6 8006 status moc_ms_17
+remtstm_abis tstm2_6 8006 status mtc_17
+remtstm_abis tstm2_6 8006 status moc_fix_17
+remtstm_abis tstm2_6 8006 status lu_17
+remtstm_abis tstm2_6 8006 status mtsms_17
+remtstm_abis tstm2_6 8006 status moc_sms_17
+exit

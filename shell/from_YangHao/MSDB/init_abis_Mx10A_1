@@ -1,0 +1,5 @@
+#!/bin/sh
+port=8001
+host=tstm2_1
+remtstm_abis $host $port userpath /home/mx95_tdm/mx20a_eth1/user
+remtstm_abis $host $port execute ctl/abis_ctl.tsm Nom4500_ETH_Mx10A_1.tsm true

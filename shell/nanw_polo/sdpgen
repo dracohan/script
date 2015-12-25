@@ -1,0 +1,804 @@
+#!/bin/bash
+# SDP Generator
+# Lastmodi  User        Description
+# WANG Nan  2012-11-23	Add MXB13 support; Note that there is no MT120 for B13 delivered, B12 is applied defaultly.
+#			usage changes significantly.
+# WANG Nan  2012-10-31  Add cross-release BTS selection.
+# WANG Nan  2012-09-07  Fix lots of bugs and add lots of hints messages.
+# WANG Nan  2012-08-28  Made huge software architecture modification. Introduce DebugLevel.
+# WANG Nan  2012-08-27  Create everyone's own temp directory, PV only affects user itself.
+# WANG Nan  2012-08-22  Move temp dir and BUILD dir to $HOMEDIR/SDPGEN
+#                       Auto download and extract oppa for mxblr
+#                       Avoid sdpgen confliction
+# WANG Nan  2012-08-06  Add -o option, the argument will be used as the OPPA indicator located at /data_lab/SDP
+#                       Add -r option, no argument needed, this option will trigger removement of previous generated package.
+#                       Remove SWDB1 in npf file.
+# WANG Nan  2012-07-25  Provide the target 8.3 directory name other than the softlink itself when try to make existing package.
+# WANG Nan  2012-07-13  Add exit info.
+# WANG Nan  2012-07-12  Support two-parts SDP packages in B12 G2 since OPPAAL01C
+# WANG Nan  2012-07-12  Use OPPLAN01E
+# WANG Nan  2012-07-06  Support LRC Migration Script auto-copying
+# WANG Nan  2012-05-24  SIL script name changed in OPPLAN01C, just found.
+# WANG Nan  2012-05-14  Use OPPLAN01C
+# WANG Nan  2012-04-24  Make -m a default options
+# WANG Nan  2012-04-24  Remove MT120 dependency for LRC
+# WANG NAN  2011-12-14  3BKA20CBR307333, add INTVER
+# WANG NAN  2011-12-13  Add LRC Part
+# WANG NAN  2011-11-17  Did what should be done last time
+# WANG NAN  2011-10-24  Create a new SIL file when copying BTS and TC SW, in order to avoiding the writing permission problem.
+# WANG NAN  2011-10-18  Modify SDP output prefix to be upper case
+# CYANYAN   2011-10-18  Change B12 G2 OPPO to the latest OPPAAL02B,Change B12 MX OPPO to the latest OPPXAL01B
+# WANG NAN  2011-09-07  Modify the target package name prefix to be upper case one to be inline with 3BK112040467DSZZA Software Maintenance B11
+# YANYANC   2011-06-29  Add some comments
+# LUANZH    2011-06-11  Change B11 G2 OPPO to the latest OPPAAZ01E
+# WANGNAN   2011-05-11  Take B12 TC for b12 sdp generating
+# WANGNAN   2011-04-12  Add support for g2b12
+# WANGNAN   2011-03-29  Line423 Modify FDWN filename when backup at $HOMEDIR/FDWN
+# WANGNAN   2011-03-25  mxb12 sdp will use mxb12 tdm bts since now
+# WANGNAN   2011-03-14  Output SDP name all lower case to avoid patchmanagement bug
+#                       Combine all *.sdp file inside the script
+#                       BSC version input change to BSC/SUB
+#                       Add option to indicate architecture, auto detect release NO.
+# WANGNAN   2011-01-28  Avoid copy NPF and log file to target SDP package.
+# WANGNAN   2011-01-18  Explicitly show the migration script version
+# WANGNAN   2011-01-17  Avoid to generate same SDP by checking soft link
+# WANGNAN   2011-01-13  Change MOD item in NPF file; change the naming rule of output sdppackage, which should not be modified even in future usage.
+# WANGNAN   2011-01-12  Backup NPF file to SDP package
+#                       Change TARGET, add label, backup config
+# WANGNAN   2010-12-08  Move functions to BASH.lib
+# WANGNAN   2010-12-04  Add parameter checking
+# WANGNAN   2010-12-03  Add symbol link other than copy source software. 
+# WANGNAN   2010-11-25  Define new usage. 
+#                       echoed Green for logs.
+#                       Debug Mode.
+#                       Auto Extract TC delivery ZIP file.
+#                       Use source sw copy instead of original delivery.
+# WANGNAN   2010-11-23  Combine all versions, do not maintain B10 version
+# WANGNAN   2010-11-03  modification for mx b12
+# WANGNAN   2010-04-13  migration script location was specified other than matched by *
+# WANGNAN   2009-05-26  BXPF use default suffix
+# WANGNAN   2009-05-26  Use new SIL file everytime
+# WANGNAN   2009-05-19  Fix the "sh file missing ERROR" problem
+# WANGNAN   2009-05-18  Release
+# WANGNAN   2009-05-15  Extract configuration
+# WANGNAN   2009-05-15  MT120 version selectable
+# WANGNAN   2009-05-11  creation
+
+
+
+#    _                    _   ____     __                  _   _             
+#   | |                  | | |___ \   / _|                | | (_)            
+#   | |     _____   _____| |   __) | | |_ _   _ _ __   ___| |_ _  ___  _ __  
+#   | |    / _ \ \ / / _ \ |  |__ <  |  _| | | | '_ \ / __| __| |/ _ \| '_ \ 
+#   | |___|  __/\ V /  __/ |  ___) | | | | |_| | | | | (__| |_| | (_) | | | |
+#   |______\___| \_/ \___|_| |____/  |_|  \__,_|_| |_|\___|\__|_|\___/|_| |_|
+#                                                                            
+#   
+
+
+function CopyMigScript()
+{
+    SetDebugFlag 3;
+    # copy Migration Script if We've found it.
+    [ -z "$MIGDELIV" ] || {
+        echo -n "Copying MIGRATION SQL from $MIGDELIV ..."
+        DEBUGEN && SUSP;
+        if [ $ARCHI = "lr" ] 
+        then
+            cp $MIGDELIV $SDPPACKAGENAME
+            cd $SDPPACKAGENAME
+            tar xvf *tar >>/dev/null
+            rm *tar
+        else
+            cp $MIGDELIV/*SQL $SDPPACKAGENAME
+        fi  
+        echo DONE;
+   }
+}
+
+function RealizeSIL()
+{
+    SetDebugFlag 3;
+    TMPSIL=$(echo *SIL);
+    rm $TMPSIL;
+    cp $1/*SIL $TMPSIL;
+    chmod ug+w $TMPSIL;
+}
+
+function DeduceNEDelivePath()
+{
+#BTS
+#    echo $BTSTDMVER|grep '^[a,A]' && {
+#        BTSTDMDELIV=/data_lab/SDP/BTS/EVOLIUM_TDM/11_0/$BTSTDMVER
+#    }
+# B12 IP
+    echo $BTSIPVER|grep '^AL' && {
+    	BTSIPVER=$(echo $BTSIPVER|sed 's/^AL//');
+    	RELEASENUMBER=12;
+        BTSIPDELIV=/data_lab/SDP/BTS/EVOLIUM_IP/${RELEASENUMBER}_0/$BTSIPVER;
+    }
+    echo $BTSIPVER|grep '^AN' && {
+    	BTSIPVER=$(echo $BTSIPVER|sed 's/^AN//');
+    	RELEASENUMBER=13;
+        BTSIPDELIV=/data_lab/SDP/BTS/EVOLIUM_IP/${RELEASENUMBER}_0/$BTSIPVER;
+    }
+#MT120
+}
+function mxb11()
+{
+    SetDebugFlag 3;
+    ## the letter indicate the release number:11,12,10
+    RELEASEIND=Z
+    ## the important letter that differs in the default dls name
+    INTVER=34
+    SKLIND=B
+    [ -z "$OPPANAME" ] && OPPANAME=OPPXAZ01C
+    OPPADIR=$HOMEDIR/$OPPANAME
+    OPPA=$OPPADIR/MxOPPA
+    BSCSILSH=$OPPADIR/sil_sh/sil_mxbsc8.sh
+    BTSSILSH=$OPPADIR/sil_sh/tr_bts_sil.sh
+    MT120SILSH=$OPPADIR/sil_sh/tr_mt120_sil.sh
+    BSCDELIV=/project/gsmdel/mxb11/bss/bsc/$BSCVER/$BSCSVER
+    BTSTDMDELIV=/data_lab/SDP/BTS/EVOLIUM_TDM/11_0/$BTSTDMVER
+    BTSIPDELIV=/data_lab/SDP/BTS/EVOLIUM_IP/11_0/$BTSIPVER
+    MT120DELIV=/data_lab/SDP/TC/MT120/11_0
+    cd $MT120DELIV
+    ## no need to input complete mt120 versiona name. e.g use 10Z instead of 10Z_10Z
+    MT120VER=$(\ls -d ${MT120VER}*)
+    MT120DELIV=$MT120DELIV/$MT120VER
+    [ -f "$(ls $MT120DELIV/*SIL)" ] || unzip -u -d $MT120DELIV $(ls $MT120DELIV/*ZIP $MT120DELIV/*zip)
+    TARGETLINK=$HOMEDIR/STORAGE/${ARCHI}b${RELEASE}.$BSCVER$BSCSVER$([ -z $IPEN ] || echo ".IP$BTSIPVER")$([ -z $TDMEN ] || echo ".TDM$BTSTDMVER").$MT120VER
+    # the letter indicate architecture in output sdp name
+    ARCHIIND=X
+}
+
+function mxb13()
+{
+    SetDebugFlag 3;
+    INTVER=36
+    RELEASEIND=N
+    SKLIND=D
+    [ -z "$OPPANAME" ] && OPPANAME=OPPXAN01B;
+    OPPADIR=$HOMEDIR/$OPPANAME
+    OPPA=$OPPADIR/MxOPPA
+    BSCSILSH=$OPPADIR/sil_sh/sil_mxbsc8.sh
+    BTSSILSH=$OPPADIR/sil_sh/tr_bts_sil.sh
+    MT120SILSH=$OPPADIR/sil_sh/tr_mt120_sil.sh
+    BSCDELIV=/project/gsmdel/mxb13/bss/bsc/$BSCVER/$BSCSVER
+    BTSTDMDELIV=/data_lab/SDP/BTS/EVOLIUM_TDM/13_0/$BTSTDMVER
+    BTSIPDELIV=/data_lab/SDP/BTS/EVOLIUM_IP/13_0/$BTSIPVER
+    MT120DELIV=/data_lab/SDP/TC/MT120/12_0
+    cd $MT120DELIV
+    ## no need to input complete mt120 versiona name. e.g use 10Z instead of 10Z_10Z
+    MT120VER=$(\ls -d ${MT120VER}*)
+    MT120DELIV=$MT120DELIV/$MT120VER
+    [ -f "$(ls $MT120DELIV/*SIL)" ] || unzip -u -d $MT120DELIV $(ls $MT120DELIV/*ZIP $MT120DELIV/*zip)
+    TARGETLINK=$HOMEDIR/STORAGE/${ARCHI}b${RELEASE}.$BSCVER$BSCSVER$([ -z $IPEN ] || echo ".IP$BTSIPVER")$([ -z $TDMEN ] || echo ".TDM$BTSTDMVER").$MT120VER
+    # the letter indicate architecture in output sdp name
+    ARCHIIND=X
+}
+function lrb13()
+{
+    SetDebugFlag 3;
+    INTVER=36
+    RELEASEIND=N
+    SKLIND=D
+    [ -z "$OPPANAME" ] && OPPANAME=opplan02c
+    OPPADIR=$HOMEDIR/$OPPANAME
+    [ -d $OPPADIR ] || {
+        cd $HOMEDIR
+        mkdir $OPPANAME
+        cp /datatool/oppa/download/$OPPANAME.tar $OPPANAME
+        cd $OPPANAME
+        tar xvf $OPPANAME.tar
+        chmod -Rf ugo+rw *
+        chmod -Rf ugo+rw $OPPANAME
+    }
+    OPPA=$OPPADIR/LrOPPL
+    BSCSILSH=$OPPADIR/sil_sh/SIL_LRBSC.SH
+    BTSSILSH=$OPPADIR/sil_sh/tr_bts_sil.sh
+    BSCDELIV=/project/gsmdel/mxlr/bss/bsc/$BSCVER/$BSCSVER
+    [ -z "$BTSIPDELIV" ] && BTSIPDELIV=/data_lab/SDP/BTS/EVOLIUM_IP/12_0/$BTSIPVER
+    TARGETLINK=$HOMEDIR/STORAGE/${ARCHI}${RELEASE}.$BSCVER$BSCSVER$(echo ".IP$BTSIPVER")
+    ARCHIIND=R
+}
+
+function mxb12()
+{
+    SetDebugFlag 3;
+    INTVER=36
+    RELEASEIND=L
+    SKLIND=C
+    [ -z "$OPPANAME" ] && OPPANAME=OPPXAL01B
+    OPPADIR=$HOMEDIR/$OPPANAME
+    OPPA=$OPPADIR/MxOPPA
+    BSCSILSH=$OPPADIR/sil_sh/sil_mxbsc8.sh
+    BTSSILSH=$OPPADIR/sil_sh/tr_bts_sil.sh
+    MT120SILSH=$OPPADIR/sil_sh/tr_mt120_sil.sh
+    BSCDELIV=/project/gsmdel/mxb12/bss/bsc/$BSCVER/$BSCSVER
+    BTSTDMDELIV=/data_lab/SDP/BTS/EVOLIUM_TDM/12_0/$BTSTDMVER
+    BTSIPDELIV=/data_lab/SDP/BTS/EVOLIUM_IP/12_0/$BTSIPVER
+    MT120DELIV=/data_lab/SDP/TC/MT120/12_0
+    cd $MT120DELIV
+    MT120VER=$(\ls -d ${MT120VER}*)
+    MT120DELIV=$MT120DELIV/$MT120VER
+    [ -f "$(ls $MT120DELIV/*SIL)" ] || unzip -u -d $MT120DELIV $(ls $MT120DELIV/*ZIP $MT120DELIV/*zip)
+    TARGETLINK=$HOMEDIR/STORAGE/${ARCHI}b${RELEASE}.$BSCVER$BSCSVER$([ -z $IPEN ] || echo ".IP$BTSIPVER")$([ -z $TDMEN ] || echo ".TDM$BTSTDMVER").$MT120VER
+
+    ARCHIIND=X
+}
+
+function g2b11()
+{
+    SetDebugFlag 3;
+    INTVER=34
+    RELEASEIND=Z
+    SKLIND=B
+    [ -z "$OPPANAME" ] && OPPANAME=OPPAAZ01E
+    OPPADIR=$HOMEDIR/$OPPANAME
+    OPPA=$OPPADIR/OPPA
+    BSCSILSH=$OPPADIR/sil_sh/sil_bsc.sh
+    BTSSILSH=$OPPADIR/sil_sh/tr_bts_sil.sh
+    BSCDELIV=/project/gsmdel/rB/bss/bsc/$BSCVER/$BSCSVER
+    BTSTDMDELIV=/data_lab/SDP/BTS/EVOLIUM_TDM/11_0/$BTSTDMVER
+    TARGETLINK=$HOMEDIR/STORAGE/${ARCHI}b${RELEASE}.$BSCVER$BSCSVER$(echo ".TDM$BTSTDMVER")
+    
+    ARCHIIND=A
+}
+
+function g2b12()
+{
+    SetDebugFlag 3;
+    INTVER=36
+    RELEASEIND=L
+    SKLIND=C
+    [ -z "$OPPANAME" ] && OPPANAME=OPPAAL01C
+    OPPADIR=$HOMEDIR/$OPPANAME
+    OPPA=$OPPADIR/OPPA
+    BSCSILSH=$OPPADIR/sil_sh/sil_bsc.sh
+    BTSSILSH=$OPPADIR/sil_sh/tr_bts_sil.sh
+    BSCDELIV=/project/gsmdel/rC/bss/bsc/$BSCVER/$BSCSVER
+    BTSTDMDELIV=/data_lab/SDP/BTS/EVOLIUM_TDM/12_0/$BTSTDMVER
+    TARGETLINK=$HOMEDIR/STORAGE/${ARCHI}b${RELEASE}.$BSCVER$BSCSVER$(echo ".TDM$BTSTDMVER")
+    
+    ARCHIIND=A
+}
+
+
+function FindMIGV()
+{
+    SetDebugFlag 3;
+    VERSIONLIST="H G F E D C B A";
+    if [ $ARCHI = "lr" ]
+    then
+        for MIGV in $VERSIONLIST
+        do
+        if [ -f "/datatool/MigrationScripts/download/MIGL$1$MIGV.tar" ]
+        then
+            echo "/datatool/MigrationScripts/download/MIGL$1$MIGV.tar";
+            break;
+        else
+            :
+        fi
+        done
+    else
+        for MIGV in $VERSIONLIST
+        do
+        if [ -d "/ap/polo/deliver_notes/oef/mig_pkg/mig_delivery_$1$MIGV" ]
+        then
+            echo "/ap/polo/deliver_notes/oef/mig_pkg/mig_delivery_$1$MIGV"
+            break;
+        else
+            :
+        fi
+        done
+    fi
+}
+
+function help()
+# Just print help information
+{
+    HIGHLIGHT "Important: sdp usage has changed significantly!!!";
+    echo "sdpgen [ -r ] [ - gxl ] [ -i <IPBTS> ] [ -t <TDMBTS> ] [ -m <MT120> ] [-o <OPPAVERSION> ] <BSC>[/]<SUBBSC> "
+    echo "-r Remove previous build"
+    echo "-g G2, -x MX, -l LRC"
+    echo "-i IP BTS will be provided"
+    echo "-t TDM BTS will be provided"
+    echo "-m MT120 will be provided"
+    echo "Version names of other BSS NE are case sensitive."
+    echo "-o OPPA version, which is expected at /data_lab/SDP"
+    echo "<BSC>[/]<SUBBSC>: BSC version and internal subversion, e.g. az08b001."
+
+    echo "e.g. sdpgen -x -i 05E -t 05F -m 10Z_10Z az08b/001"
+    echo "e.g. sdpgen -x -t 05E -m 01K al01b/001"
+    echo "e.g. sdpgen -l -i 10B an01h/001"
+    echo "e.g. sdpgen -x -i 10B -m 01K an10c/001"
+    DEBUGINFO "----------------------------------------------"
+    DEBUGINFO "https://acos.alcatel-lucent.com/projects/wupt/"
+    DEBUGINFO "----------------------------------------------"
+}
+
+
+function SelectTarget()
+{
+    SetDebugFlag 3;
+    INITSER=01;
+    TARGETS=SDPT${ARCHIIND}$(echo $BSCVER|sed 's/^.//'|sed 's/.$//').;
+    TARGETE=$(echo $BSCVER|sed 's/^....//');
+    
+    while [ -d "$HOMEDIR/STORAGE/$TARGETS$INITSER$TARGETE" ]
+    do
+            INITSER=$((10#$INITSER + 1));
+            [ $INITSER -lt 10 ] && INITSER=0$INITSER;
+            DEBUGEN && echo "$HOMEDIR/STORAGE/$TARGETS$INITSER$TARGETE";
+    done
+    
+    TARGET=$TARGETS$INITSER$TARGETE;
+    LABEL=$(echo $TARGET|sed 's/\.//'|sed 's/^.....//');
+    TARGET=$HOMEDIR/STORAGE/$TARGET;
+}
+
+function ExtractSL()
+# Extract the bare target path of the SDP softlink.
+# Called By: Remove()
+{
+    SetDebugFlag 3;
+    ls -l $1|sed  's/^.*\/data/\/data/';
+}
+
+
+function CalcBTSCount()
+{
+    SetDebugFlag 3;
+    BTSCOUNT=0;
+    [ "$IPEN" = TRUE ] && BTSCOUNT=$(($BTSCOUNT + 1));
+    [ "$TDMEN" = TRUE ] && BTSCOUNT=$(($BTSCOUNT + 1));
+    DEBUGEN && DISARGS IPEN TDMEN BTSCOUNT;
+}
+
+
+function GetRelease()
+{
+    SetDebugFlag 3;
+    echo $BSCVER|grep az >>/dev/null&& RELEASE=11
+    echo $BSCVER|grep al >>/dev/null&& RELEASE=12
+    echo $BSCVER|grep an >>/dev/null&& RELEASE=13
+}
+
+
+function LegalChecking()
+{
+    SetDebugFlag 3;
+    [ -z "$1" ] || ErrorExit "Redundant argument.";
+    [ -z "$RELEASE" ] && ErrorExit Release not recognized.
+    [ -z "$ARCHI" ] && ErrorExit Architecture not recognized.
+    [ $RELEASE = 11 ] || [ $RELEASE = 12 ] || [ $RELEASE = 13 ] || ErrorExit Unrecognized release.
+#[ $RELEASE = lr ] && [ $(hostname) != sbardr99 ] && ErrorExit Please generate LRC sdp upon sbardr99.
+    [ -z "$BSCVER" ] && ErrorExit BSC version not recognized.
+    [ -z "$BSCSVER" ] && ErrorExit BSC sub version not recognized.
+#[ TRUE = "$TDMEN" ] && [ -z "$BTSTDMVER" ] && ErrorExit TDM enabled but TDM BTS not provided.
+    [ -z "$OPPADIR" ] || [ -d "$OPPADIR" ] || ErrorExit OPPAVersion does not exist.
+    [ "$BTSCOUNT" -lt 1 ] && ErrorExit "No BTS provided.";
+    [ lr != "$ARCHI" ] && [ TRUE != "$MT120EN" ] && ErrorExit MT120 not recognized!;
+
+    case $ARCHI in
+    mx)
+        ;;
+    g2)
+        ;;
+    lr)
+        ;;
+    ?)
+        ErrorExit "Unrecognized architecture."
+        ;;
+    esac
+}
+
+
+function DeduceParameters()
+{
+    SetDebugFlag 3;
+#DeduceNEDelivePath;
+    ${ARCHI}b${RELEASE}
+    TARGETLINK=$TARGETLINK.$OPPANAME;
+    SelectTarget;
+}
+
+function DetectDMD()
+## Find Skeleton DLS name and DATAMODEL name as well as migration script
+{
+    SetDebugFlag 3;
+    cd $BSCDELIV
+    #DEBUGEN && echo S${SKLIND}*;
+    for file in $(\ls S${SKLIND}*|grep "[0-9][0-9][0-9][0-9]")
+    do
+    SKEDLS=$file
+    break
+    done
+    cd $INITIALPWD
+
+    DATAMODEL=$(echo $SKEDLS|sed 's/^..//'|sed 's/......$//');
+    MIGDELIV=$(FindMIGV $DATAMODEL)
+}
+#    _                    _   ___     __                  _   _             
+#   | |                  | | |__ \   / _|                | | (_)            
+#   | |     _____   _____| |    ) | | |_ _   _ _ __   ___| |_ _  ___  _ __  
+#   | |    / _ \ \ / / _ \ |   / /  |  _| | | | '_ \ / __| __| |/ _ \| '_ \ 
+#   | |___|  __/\ V /  __/ |  / /_  | | | |_| | | | | (__| |_| | (_) | | | |
+#   |______\___| \_/ \___|_| |____| |_|  \__,_|_| |_|\___|\__|_|\___/|_| |_|
+#                                                                           
+#  
+
+function CreateTmp()
+{
+    SetDebugFlag 2;
+    [ -d $BUFFERDIR ] || mkdir $BUFFERDIR;
+    [ -d $BUFFERDIR/temp ] || mkdir $BUFFERDIR/temp;
+    [ -d $BUFFERDIR/BUILD ] || mkdir $BUFFERDIR/BUILD;
+    CleanTmp;
+}
+
+function CleanTmp()
+{
+    SetDebugFlag 2;
+    rm -Rf $BUFFERDIR/temp/* $BUFFERDIR/BUILD/*;
+}
+
+
+
+function PrepareBSCSW()
+{
+    SetDebugFlag 2;
+    HIGHLIGHT "Preparing BSC SW..."
+    [ -d "$BSCDELIV" ] || ErrorExit "BSC software not found.";
+    
+    BSC=$BUFFERDIR/temp/${ARCHI}b${RELEASE}$BSCVER$BSCSVER
+    if [ -d "$BSC" ]
+    then
+        :
+    else
+        mkdir $BSC
+        cd $BSC
+        
+        for eachfile in $BSCDELIV/*
+        do
+            ln -s $eachfile
+        done
+        cd $INITIALPWD;
+    
+        [ g2 = "$ARCHI" ] && l2u $BSC
+    fi
+    
+    cd $BSC;
+    DEBUGEN && DEBUGINFO "$BSCSILSH BSC $SKEDLS"
+    DEBUGEN && SUSP;
+    bash $BSCSILSH BSC $SKEDLS
+    cd $INITIALPWD;
+    HIGHLIGHT DONE;
+}
+
+function PrepareBTSSW()
+{
+    SetDebugFlag 2;
+    HIGHLIGHT "Preparing BTS SW..."
+    
+    if [ -z $BTSIPVER ]
+    then
+        :
+    else
+        [ -d "$BTSIPDELIV" ] || ErrorExit "IP BTS $BTSIPVER not found.";
+        BTSIP=$BUFFERDIR/temp/IPb$RELEASE$BTSIPVER
+        if [ -d "$BTSIP" ]
+        then
+                :
+        else
+                mkdir $BTSIP
+                cd $BTSIP
+                for eachfile in $BTSIPDELIV/*
+                do
+                    ln -s $eachfile
+                done
+                RealizeSIL $BTSIPDELIV;
+                $BTSSILSH
+                cd $INITIALPWD;
+        fi
+
+    fi  
+    if [ -z $BTSTDMVER ]
+    then
+        :
+    else
+        [ -d "$BTSTDMDELIV" ] || ErrorExit "TDM BTS $BTSTDMVER not found.";
+            BTSTDM=$BUFFERDIR/temp/TDMb$RELEASE$BTSTDMVER
+            
+        if [ -d "$BTSTDM" ]
+        then
+            :
+        else
+                mkdir $BTSTDM
+                cd $BTSTDM
+                for eachfile in $BTSTDMDELIV/*
+                do
+                    ln -s $eachfile
+                done
+                RealizeSIL $BTSTDMDELIV;
+                $BTSSILSH
+                cd $INITIALPWD;
+        fi
+    fi
+    HIGHLIGHT DONE;
+}
+
+function PrepareMT120SW()
+{
+    SetDebugFlag 2;
+    if [ -z "$MT120EN" ]
+    then
+        :
+    else
+        HIGHLIGHT "Preparing MT120 SW..."
+        [ -d "$MT120DELIV" ] || ErrorExit "MT120 $MT120VER not found.";
+        MT120=$BUFFERDIR/temp/MT120b$RELEASE$MT120VER
+        if [ -d "$MT120" ]
+        then
+            :
+        else
+                mkdir $MT120
+                cd $MT120
+                for eachfile in $MT120DELIV/*
+                do
+                    ln -s $eachfile
+                done
+                RealizeSIL $MT120DELIV;
+                $MT120SILSH
+                cd $INITIALPWD;
+        fi
+        HIGHLIGHT DONE;
+    fi
+}
+
+function GenerateNPF()
+{
+    SetDebugFlag 2;
+    echo "SLD_label,C,BSCA$RELEASEIND,BS,0" 
+    echo "MOD_nbr,C,$LABEL,BS,0" 
+    echo "Production_mode,C,BSS,BS,0" 
+    echo "Site_name,C,BSC package Release $RELEASE,BS,0" 
+    echo "Num_of_btsswdb,D,$BTSCOUNT,BS,0" 
+    echo "Num_of_bts,D,$BTSCOUNT,BS,0" 
+    [ g2 = "$ARCHI" ] || echo "#TCSL_VER,C,1,IF,0" 
+    [ g2 = "$ARCHI" ] || echo "#INT_VER,C,$INTVER,IF,0" 
+    [ g2 = "$ARCHI" ] && echo "Site_name,C,OEF BTS 1,CE,1" 
+    
+    echo "NPF_file,C,$NPFFILE,BS,0" ;
+    [ g2 = "$ARCHI" ] || echo "#MXPF,C,$(ls $BSC/MXPF*.TAR),IF,0" ;
+    echo "#SWDB,C,$(ls $BSC/*SIL),IF,0" ;
+#   echo "#SWDB1,C,$(ls $BSC/*SIL),IF,0" ;
+    [ TRUE = "$MT120EN" ] && echo "#MT120SWDB,C,$(ls $MT120/*SIL),IF,0" ;
+    
+    NEXT=1
+    
+    if [ TRUE = "$TDMEN" ]
+    then
+        echo "#BTSSWDB,C,$(ls $BTSTDM/*SIL),IF,$NEXT" ;
+        echo "BTS_Index,D,$NEXT,CE,$NEXT" 
+        [ g2 = "$ARCHI" ] && echo "BTS_Index,D,1,TS,1" 
+        [ g2 = "$ARCHI" ] && echo "BTS_Index,D,1,NC,1" 
+        echo "#OMUFTYP,C,00O2,CE,$NEXT" 
+        echo "Load_index,D,$NEXT,CE,$NEXT" 
+        NEXT=$(($NEXT + 1))
+    else
+        :
+    fi
+    
+    if [ TRUE = "$IPEN" ]
+    then
+            echo "#BTSSWDB,C,$(ls $BTSIP/*SIL),IF,$NEXT" ;
+        echo "BTS_Index,D,$NEXT,CE,$NEXT" 
+        echo "#OMUFTYP,C,00O2,CE,$NEXT" 
+        echo "Load_index,D,$NEXT,CE,$NEXT" 
+            NEXT=$(($NEXT + 1))
+    else
+            :
+    fi
+    
+    [ TRUE = "$MT120EN" ] && cd $MT120
+    [ TRUE = "$MT120EN" ] && echo "#MT120_MF,C,$BUFFERDIR/BUILD/$(ls MTT*),OF,0" ;
+    [ TRUE = "$MT120EN" ] && cd $INITIALPWD;
+    echo "#BSS_MF,C,$BUFFERDIR/BUILD/BSSMA${RELEASEIND}01.01A,OF,0" ;
+    echo "#BSSMAP,C,$BUFFERDIR/BUILD/BSSXA${RELEASEIND}01.01A,OF,0" ;
+    echo "#CPF_MF,C,$BUFFERDIR/BUILD/BSSCA${RELEASEIND}01.01A,OF,0" ;
+    echo "#DLS_MF,C,$BUFFERDIR/BUILD/BSSLA${RELEASEIND}01.01A,OF,0" ;
+    [ g2 = $ARCHI ] || echo "#BSCXPF,C,$BUFFERDIR/BUILD/BXPFA${RELEASEIND}01.01A,OF,0" ;
+}
+
+function PackingSDP()
+{
+    SetDebugFlag 2;
+    # after generating, organization
+    ORIGINAL=YES
+    for SDPPACKAGENAME in $BUFFERDIR/BUILD/SDP*
+    do
+        ## CDE handling
+        DEBUGEN && SUSP;
+        cd $SDPPACKAGENAME
+        mv CDE* $(ls CDE*|sed 's/...$/CDE/')
+        
+        ## backup FDWN
+        #for eachfile in FDWN*
+        #do
+        #    [ -f $HOMEDIR/FDWN/$eachfile ] || cp $eachfile $HOMEDIR/FDWN/$(echo $eachfile | tr [:upper:] [:lower:]| sed 's/tab/tables/')
+        #done
+        
+        CopyMigScript;
+
+        ## naming and soft link
+        [ $ORIGINAL == "NO" ] && {
+        TARGET=${TARGET}.REST
+        TARGETLINK=${TARGETLINK}.REST
+        }
+        [ -d $TARGET ] && rm -rf $TARGET 
+        mv $SDPPACKAGENAME $TARGET
+        ln -s $TARGET $TARGETLINK
+        chmod -Rf ug+rw $TARGET
+        HIGHLIGHT "SDP package is placed to $TARGET";
+        HIGHLIGHT "Symbol link $TARGETLINK";
+        ORIGINAL=NO
+    done
+}
+#    _                    _   __    __                  _   _             
+#   | |                  | | /_ |  / _|                | | (_)            
+#   | |     _____   _____| |  | | | |_ _   _ _ __   ___| |_ _  ___  _ __  
+#   | |    / _ \ \ / / _ \ |  | | |  _| | | | '_ \ / __| __| |/ _ \| '_ \ 
+#   | |___|  __/\ V /  __/ |  | | | | | |_| | | | | (__| |_| | (_) | | | |
+#   |______\___| \_/ \___|_|  |_| |_|  \__,_|_| |_|\___|\__|_|\___/|_| |_|
+#                                                                         
+#      
+
+function Initialize()
+{
+#    [ $(hostname) = sbardx4b ] || echo "Make sure you are having an grpid of 19(bsc), use 'newgrp bsc'."
+    . /data_lab/Shells/BASH.lib;
+    umask 000;
+    DEBUGLEVEL=0;
+    INITIALPWD=$PWD;
+    HOMEDIR=/data_lab/SDP;
+    BUFFERDIR=$HOMEDIR/.SDPGEN/$UID;
+    NPFFILE=$BUFFERDIR/temp/NPF.npf;
+    
+    PVFILE=SDPGEN$UID;
+    PV_require $PVFILE;
+}
+
+function GetArguments()
+{
+    SetDebugFlag 1;
+    CalcBTSCount;
+    bscversion=$1;shift; # this is expected as xxxxxyyy or xxxxx/yyy.
+    BSCVER=$(echo $bscversion|sed 's/...$//'|sed 's/\/.*$//'); #delete the last 3 characters, then everything coming with \/
+    BSCSVER=$(eval "echo $bscversion|sed 's/^$BSCVER//'|sed 's/\///'");
+
+    GetRelease;
+
+    [ -z "$ARCHI" ] && ARCHI=mx;
+    #[ g2 = "$ARCHI" ] && BTSCOUNT=1&&TDMEN=TRUE&&IPEN=FALSE;
+    #[ lr = "$ARCHI" ] && BTSCOUNT=1 && TDMEN=FALSE && IPEN=TRUE;
+
+#    [ TRUE = "$IPEN" ] && BTSIPVER=$1 && shift;
+#    [ TRUE = "$TDMEN" ] && BTSTDMVER=$1 && shift;
+#    [ TRUE = "$MT120EN" ] && MT120VER=$1 && shift;
+    
+DEBUGEN && DISARGS DEBUG BTSCOUNT IPEN TDMEN MT120EN ARCHI RELEASE BSCVER BSCSVER BTSIPVER BTSTDMVER MT120VER && SUSP;
+    LegalChecking $*;
+    DeduceParameters;
+}
+
+function Remove()
+# Remove a SDP softlink and its target
+{
+    SetDebugFlag 1;
+    if [ -d $TARGETLINK ]
+    then
+        for target in $TARGETLINK $(ExtractSL $TARGETLINK)
+        do
+            [ -d $target ] && rm -rf $target;
+        done
+    else
+        :
+    fi 
+
+    HIGHLIGHT "Remove Successfully";
+}
+function Prepare()
+{
+    SetDebugFlag 1;
+    
+    [ -d $TARGETLINK ] && NormalExit "$(ExtractSL $TARGETLINK) is what you need.";
+    CreateTmp;
+    DetectDMD;
+    
+    DEBUGEN && DISARGS SKEDLS DATAMODEL MIGDELIV BSCDELIV BTSTDMDELIV BTSIPDELIV MT120DELIV BTSSILSH && SUSP;
+    PrepareBSCSW;
+    PrepareBTSSW;
+    PrepareMT120SW;
+    
+    HIGHLIGHT "Generating NPF File ...";
+    GenerateNPF > $NPFFILE;
+    YELLOW cat $NPFFILE;
+    HIGHLIGHT "DONE";
+    
+    DEBUGEN && DEBUGINFO "$OPPA $NPFFILE $BUFFERDIR/BUILD" && SUSP;
+}
+function GenerateSDP()
+{
+    SetDebugFlag 1;
+    # core command, oppa is the sdp making tool, npffile is auto-generated.
+    $OPPA $NPFFILE $BUFFERDIR/BUILD || ErrorExit "Generation Failure, please use -d option to debug.";
+}
+
+
+#    __  __       _              ______                _   _             
+#   |  \/  |     (_)            |  ____|              | | (_)            
+#   | \  / | __ _ _  ___  _ __  | |__ _   _ _ __   ___| |_ _  ___  _ __  
+#   | |\/| |/ _` | |/ _ \| '__| |  __| | | | '_ \ / __| __| |/ _ \| '_ \ 
+#   | |  | | (_| | | (_) | |    | |  | |_| | | | | (__| |_| | (_) | | | |
+#   |_|  |_|\__,_| |\___/|_|    |_|   \__,_|_| |_|\___|\__|_|\___/|_| |_|
+#               _/ |                                                     
+#              |__/                                                      
+
+Initialize;
+
+while getopts 'd:i:t:m:gxlo:r' OPT
+do
+    case $OPT in
+    g)
+        ARCHI=g2
+        ;;
+    x)
+        ARCHI=mx
+        ;;
+    l)
+        ARCHI=lr
+        ;;
+    d)
+        DEBUGLEVEL=$OPTARG;
+        ;;
+    i)
+        IPEN=TRUE
+        BTSIPVER=$OPTARG;
+        ;;
+    m)
+        MT120EN=TRUE
+        MT120VER=$OPTARG;
+        ;;
+    t)
+        TDMEN=TRUE;
+        BTSTDMVER=$OPTARG;
+        ;;
+    r)
+        REMOVEEN=TRUE;
+        ;;
+    o)
+        OPPANAME=$OPTARG;
+        ;;
+    ?)
+        ErrorExit "Unrecognized option!!!";
+        ;;
+    esac
+done
+shift $(($OPTIND - 1));
+
+
+
+
+GetArguments $*;
+
+if [ TRUE = "$REMOVEEN" ]
+then
+    Remove;
+else
+    Prepare;
+    GenerateSDP;
+    PackingSDP;
+fi
+NormalExit;

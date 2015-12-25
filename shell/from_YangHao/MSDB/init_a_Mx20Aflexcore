@@ -1,0 +1,52 @@
+#!/bin/sh
+./remtstm_a tstm95 8016 userpath /home/mx95_aoip/aflexcore/user
+./remtstm_a tstm95 8016 execute aflex.tsm A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create M2MCCORE m2mc_core.tsm Nom4500_ETH_A_MsDb_Mx10A A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_01 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 16801 108 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_02 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 16909 120 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_03 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 17029 72 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_04 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 17101 60 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_05 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 17161 60 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_06 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 17221 54 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_07 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 17275 66 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_08 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 17341 60 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_09 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 17401 60 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_10 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 17461 60 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_11 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 17521 60 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_12 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 17581 60 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_13 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 17641 60 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_14 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 17701 60 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_15 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 17761 60 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_16 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 17821 60 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_17 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 17881 60 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_18 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 17941 60 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_19 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 18001 60 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_20 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 18061 60 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_21 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 18121 60 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_22 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 18181 60 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_23 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 18241 60 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_24 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 18301 60 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_25 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 18361 60 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_26 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 18421 60 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_27 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 18481 60 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_28 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 18541 60 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_29 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 18601 60 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_30 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 18661 60 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_31 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 18721 60 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_32 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 18781 60 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_33 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 18841 60 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_34 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 18901 60 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_35 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 18961 60 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_36 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 19021 60 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_37 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 19081 60 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_38 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 19141 60 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_39 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 19201 180 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_40 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 19381 180 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_41 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 19561 180 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_42 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 19741 180 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_43 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 19921 180 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_44 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 20101 180 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_45 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 20281 180 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_46 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 20461 180 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_47 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 20641 180 A_Mx10A_MultiProcess.tsm
+./remtstm_a tstm95 8016 create FIX2SMSINTERF_48 fix2msms_core.tsm Nom4500_ETH_A_MsDb_Mx10A 20821 180 A_Mx10A_MultiProcess.tsm

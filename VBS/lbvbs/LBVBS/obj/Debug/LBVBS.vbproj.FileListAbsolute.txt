@@ -1,0 +1,16 @@
+C:\Users\baoweih\AppData\Local\Temporary Projects\LBVBS\bin\Debug\LBVBS.exe.config
+D:\学习\Projects\VBS\lbvbs\LBVBS\bin\Debug\LBVBS.exe.config
+D:\学习\Projects\VBS\lbvbs\LBVBS\bin\Debug\LBVBS.exe
+D:\学习\Projects\VBS\lbvbs\LBVBS\bin\Debug\LBVBS.pdb
+D:\学习\Projects\VBS\lbvbs\LBVBS\bin\Debug\LBVBS.xml
+D:\学习\Projects\VBS\lbvbs\LBVBS\obj\Debug\LBVBS.Resources.resources
+D:\学习\Projects\VBS\lbvbs\LBVBS\obj\Debug\LBVBS.vbproj.GenerateResource.Cache
+D:\学习\Projects\VBS\lbvbs\LBVBS\obj\Debug\LBVBS.exe
+D:\学习\Projects\VBS\lbvbs\LBVBS\obj\Debug\LBVBS.xml
+D:\学习\Projects\VBS\lbvbs\LBVBS\obj\Debug\LBVBS.pdb
+D:\学习\script\VBS\lbvbs\LBVBS\bin\Debug\LBVBS.exe.config
+D:\学习\script\VBS\lbvbs\LBVBS\obj\Debug\LBVBS.exe
+D:\学习\script\VBS\lbvbs\LBVBS\obj\Debug\LBVBS.xml
+D:\学习\script\VBS\lbvbs\LBVBS\obj\Debug\LBVBS.pdb
+D:\学习\script\VBS\lbvbs\LBVBS\obj\Debug\LBVBS.Resources.resources
+D:\学习\script\VBS\lbvbs\LBVBS\obj\Debug\LBVBS.vbproj.GenerateResource.Cache

@@ -1,0 +1,337 @@
+#!/bin/sh
+./remtstm_a tstm95 8012 create m2mc_01 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 1 144 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_01_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 5601 144 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_01 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 11201 72
+./remtstm_a tstm95 8012 create lu_01 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 14001 72
+./remtstm_a tstm95 8012 create fix2msms_01 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 16801 108 FIX2SMSINTERF_01
+./remtstm_a tstm95 8012 create m2fixsms_01 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 21001 108
+
+./remtstm_a tstm95 8012 create m2mc_02 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 145 160 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_02_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 5745 160 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_02 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 11273 80
+./remtstm_a tstm95 8012 create lu_02 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 14073 80
+./remtstm_a tstm95 8012 create fix2msms_02 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 16909 120 FIX2SMSINTERF_02
+./remtstm_a tstm95 8012 create m2fixsms_02 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 21109 120
+
+./remtstm_a tstm95 8012 create m2mc_03 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 305 96 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_03_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 5905 96 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_03 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 11353 48
+./remtstm_a tstm95 8012 create lu_03 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 14153 48
+./remtstm_a tstm95 8012 create fix2msms_03 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 17029 72 FIX2SMSINTERF_03
+./remtstm_a tstm95 8012 create m2fixsms_03 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 21229 72
+
+./remtstm_a tstm95 8012 create m2mc_04 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 401 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_04_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 6001 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_04 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 11401 40
+./remtstm_a tstm95 8012 create lu_04 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 14201 40
+./remtstm_a tstm95 8012 create fix2msms_04 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 17101 60 FIX2SMSINTERF_04
+./remtstm_a tstm95 8012 create m2fixsms_04 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 21301 60
+
+./remtstm_a tstm95 8012 create m2mc_05 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 481 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_05_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 6081 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_05 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 11441 40
+./remtstm_a tstm95 8012 create lu_05 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 14241 40
+./remtstm_a tstm95 8012 create fix2msms_05 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 17161 60 FIX2SMSINTERF_05
+./remtstm_a tstm95 8012 create m2fixsms_05 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 21361 60
+
+./remtstm_a tstm95 8012 create m2mc_06 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 561 72 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_06_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 6161 72 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_06 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 11481 36
+./remtstm_a tstm95 8012 create lu_06 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 14281 36
+./remtstm_a tstm95 8012 create fix2msms_06 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 17221 54 FIX2SMSINTERF_06
+./remtstm_a tstm95 8012 create m2fixsms_06 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 21421 54
+
+./remtstm_a tstm95 8012 create m2mc_07 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 633 88 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_07_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 6233 88 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_07 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 11517 44
+./remtstm_a tstm95 8012 create lu_07 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 14317 44
+./remtstm_a tstm95 8012 create fix2msms_07 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 17275 66 FIX2SMSINTERF_07
+./remtstm_a tstm95 8012 create m2fixsms_07 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 21475 66
+
+./remtstm_a tstm95 8012 create m2mc_08 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 721 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_08_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 6321 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_08 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 11561 40
+./remtstm_a tstm95 8012 create lu_08 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 14361 40
+./remtstm_a tstm95 8012 create fix2msms_08 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 17341 60 FIX2SMSINTERF_08
+./remtstm_a tstm95 8012 create m2fixsms_08 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 21541 60
+
+./remtstm_a tstm95 8012 create m2mc_09 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 801 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_09_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 6401 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_09 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 11601 40
+./remtstm_a tstm95 8012 create lu_09 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 14401 40
+./remtstm_a tstm95 8012 create fix2msms_09 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 17401 60 FIX2SMSINTERF_09
+./remtstm_a tstm95 8012 create m2fixsms_09 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 21601 60
+
+./remtstm_a tstm95 8012 create m2mc_10 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 881 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_10_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 6481 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_10 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 11641 40
+./remtstm_a tstm95 8012 create lu_10 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 14441 40
+./remtstm_a tstm95 8012 create fix2msms_10 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 17461 60 FIX2SMSINTERF_10
+./remtstm_a tstm95 8012 create m2fixsms_10 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 21661 60
+
+./remtstm_a tstm95 8012 create m2mc_11 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 961 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_11_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 6561 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_11 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 11681 40
+./remtstm_a tstm95 8012 create lu_11 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 14481 40
+./remtstm_a tstm95 8012 create fix2msms_11 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 17521 60 FIX2SMSINTERF_11
+./remtstm_a tstm95 8012 create m2fixsms_11 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 21721 60
+
+./remtstm_a tstm95 8012 create m2mc_12 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 1041 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_12_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 6641 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_12 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 11721 40
+./remtstm_a tstm95 8012 create lu_12 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 14521 40
+./remtstm_a tstm95 8012 create fix2msms_12 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 17581 60 FIX2SMSINTERF_12
+./remtstm_a tstm95 8012 create m2fixsms_12 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 21781 60
+
+./remtstm_a tstm95 8012 create m2mc_13 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 1121 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_13_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 6721 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_13 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 11761 40
+./remtstm_a tstm95 8012 create lu_13 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 14561 40
+./remtstm_a tstm95 8012 create fix2msms_13 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 17641 60 FIX2SMSINTERF_13
+./remtstm_a tstm95 8012 create m2fixsms_13 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 21841 60
+
+./remtstm_a tstm95 8012 create m2mc_14 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 1201 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_14_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 6801 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_14 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 11801 40
+./remtstm_a tstm95 8012 create lu_14 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 14601 40
+./remtstm_a tstm95 8012 create fix2msms_14 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 17701 60 FIX2SMSINTERF_14
+./remtstm_a tstm95 8012 create m2fixsms_14 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 21901 60
+
+./remtstm_a tstm95 8012 create m2mc_15 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 1281 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_15_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 6881 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_15 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 11841 40
+./remtstm_a tstm95 8012 create lu_15 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 14641 40
+./remtstm_a tstm95 8012 create fix2msms_15 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 17761 60 FIX2SMSINTERF_15
+./remtstm_a tstm95 8012 create m2fixsms_15 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 21961 60
+
+./remtstm_a tstm95 8012 create m2mc_16 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 1361 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_16_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 6961 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_16 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 11881 40
+./remtstm_a tstm95 8012 create lu_16 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 14681 40
+./remtstm_a tstm95 8012 create fix2msms_16 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 17821 60 FIX2SMSINTERF_16
+./remtstm_a tstm95 8012 create m2fixsms_16 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 22021 60
+
+./remtstm_a tstm95 8012 create m2mc_17 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 1441 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_17_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 7041 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_17 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 11921 40
+./remtstm_a tstm95 8012 create lu_17 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 14721 40
+./remtstm_a tstm95 8012 create fix2msms_17 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 17881 60 FIX2SMSINTERF_17
+./remtstm_a tstm95 8012 create m2fixsms_17 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 22081 60
+
+./remtstm_a tstm95 8012 create m2mc_18 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 1521 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_18_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 7121 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_18 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 11961 40
+./remtstm_a tstm95 8012 create lu_18 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 14761 40
+./remtstm_a tstm95 8012 create fix2msms_18 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 17941 60 FIX2SMSINTERF_18
+./remtstm_a tstm95 8012 create m2fixsms_18 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 22141 60
+
+./remtstm_a tstm95 8012 create m2mc_19 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 1601 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_19_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 7201 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_19 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 12001 40
+./remtstm_a tstm95 8012 create lu_19 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 14801 40
+./remtstm_a tstm95 8012 create fix2msms_19 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 18001 60 FIX2SMSINTERF_19
+./remtstm_a tstm95 8012 create m2fixsms_19 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 22201 60
+
+./remtstm_a tstm95 8012 create m2mc_20 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 1681 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_20_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 7281 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_20 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 12041 40
+./remtstm_a tstm95 8012 create lu_20 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 14841 40
+./remtstm_a tstm95 8012 create fix2msms_20 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 18061 60 FIX2SMSINTERF_20
+./remtstm_a tstm95 8012 create m2fixsms_20 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 22261 60
+
+./remtstm_a tstm95 8012 create m2mc_21 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 1761 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_21_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 7361 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_21 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 12081 40
+./remtstm_a tstm95 8012 create lu_21 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 14881 40
+./remtstm_a tstm95 8012 create fix2msms_21 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 18121 60 FIX2SMSINTERF_21
+./remtstm_a tstm95 8012 create m2fixsms_21 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 22321 60
+
+./remtstm_a tstm95 8012 create m2mc_22 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 1841 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_22_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 7441 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_22 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 12121 40
+./remtstm_a tstm95 8012 create lu_22 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 14921 40
+./remtstm_a tstm95 8012 create fix2msms_22 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 18181 60 FIX2SMSINTERF_22
+./remtstm_a tstm95 8012 create m2fixsms_22 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 22381 60
+
+./remtstm_a tstm95 8012 create m2mc_23 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 1921 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_23_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 7521 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_23 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 12161 40
+./remtstm_a tstm95 8012 create lu_23 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 14961 40
+./remtstm_a tstm95 8012 create fix2msms_23 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 18241 60 FIX2SMSINTERF_23
+./remtstm_a tstm95 8012 create m2fixsms_23 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 22441 60
+
+./remtstm_a tstm95 8012 create m2mc_24 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 2001 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_24_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 7601 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_24 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 12201 40
+./remtstm_a tstm95 8012 create lu_24 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 15001 40
+./remtstm_a tstm95 8012 create fix2msms_24 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 18301 60 FIX2SMSINTERF_24
+./remtstm_a tstm95 8012 create m2fixsms_24 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 22501 60
+
+./remtstm_a tstm95 8012 create m2mc_25 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 2081 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_25_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 7681 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_25 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 12241 40
+./remtstm_a tstm95 8012 create lu_25 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 15041 40
+./remtstm_a tstm95 8012 create fix2msms_25 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 18361 60 FIX2SMSINTERF_25
+./remtstm_a tstm95 8012 create m2fixsms_25 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 22561 60
+
+./remtstm_a tstm95 8012 create m2mc_26 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 2161 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_26_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 7761 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_26 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 12281 40
+./remtstm_a tstm95 8012 create lu_26 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 15081 40
+./remtstm_a tstm95 8012 create fix2msms_26 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 18421 60 FIX2SMSINTERF_26
+./remtstm_a tstm95 8012 create m2fixsms_26 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 22621 60
+
+./remtstm_a tstm95 8012 create m2mc_27 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 2241 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_27_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 7841 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_27 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 12321 40
+./remtstm_a tstm95 8012 create lu_27 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 15121 40
+./remtstm_a tstm95 8012 create fix2msms_27 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 18481 60 FIX2SMSINTERF_27
+./remtstm_a tstm95 8012 create m2fixsms_27 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 22681 60
+
+./remtstm_a tstm95 8012 create m2mc_28 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 2321 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_28_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 7921 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_28 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 12361 40
+./remtstm_a tstm95 8012 create lu_28 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 15161 40
+./remtstm_a tstm95 8012 create fix2msms_28 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 18541 60 FIX2SMSINTERF_28
+./remtstm_a tstm95 8012 create m2fixsms_28 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 22741 60
+
+./remtstm_a tstm95 8012 create m2mc_29 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 2401 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_29_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 8001 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_29 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 12401 40
+./remtstm_a tstm95 8012 create lu_29 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 15201 40
+./remtstm_a tstm95 8012 create fix2msms_29 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 18601 60 FIX2SMSINTERF_29
+./remtstm_a tstm95 8012 create m2fixsms_29 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 22801 60
+
+./remtstm_a tstm95 8012 create m2mc_30 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 2481 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_30_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 8081 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_30 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 12441 40
+./remtstm_a tstm95 8012 create lu_30 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 15241 40
+./remtstm_a tstm95 8012 create fix2msms_30 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 18661 60 FIX2SMSINTERF_30
+./remtstm_a tstm95 8012 create m2fixsms_30 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 22861 60
+
+./remtstm_a tstm95 8012 create m2mc_31 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 2561 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_31_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 8161 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_31 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 12481 40
+./remtstm_a tstm95 8012 create lu_31 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 15281 40
+./remtstm_a tstm95 8012 create fix2msms_31 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 18721 60 FIX2SMSINTERF_31
+./remtstm_a tstm95 8012 create m2fixsms_31 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 22921 60
+
+./remtstm_a tstm95 8012 create m2mc_32 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 2641 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_32_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 8241 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_32 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 12521 40
+./remtstm_a tstm95 8012 create lu_32 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 15321 40
+./remtstm_a tstm95 8012 create fix2msms_32 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 18781 60 FIX2SMSINTERF_32
+./remtstm_a tstm95 8012 create m2fixsms_32 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 22981 60
+
+./remtstm_a tstm95 8012 create m2mc_33 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 2721 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_33_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 8321 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_33 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 12561 40
+./remtstm_a tstm95 8012 create lu_33 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 15361 40
+./remtstm_a tstm95 8012 create fix2msms_33 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 18841 60 FIX2SMSINTERF_33
+./remtstm_a tstm95 8012 create m2fixsms_33 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 23041 60
+
+./remtstm_a tstm95 8012 create m2mc_34 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 2801 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_34_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 8401 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_34 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 12601 40
+./remtstm_a tstm95 8012 create lu_34 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 15401 40
+./remtstm_a tstm95 8012 create fix2msms_34 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 18901 60 FIX2SMSINTERF_34
+./remtstm_a tstm95 8012 create m2fixsms_34 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 23101 60
+
+./remtstm_a tstm95 8012 create m2mc_35 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 2881 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_35_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 8481 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_35 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 12641 40
+./remtstm_a tstm95 8012 create lu_35 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 15441 40
+./remtstm_a tstm95 8012 create fix2msms_35 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 18961 60 FIX2SMSINTERF_35
+./remtstm_a tstm95 8012 create m2fixsms_35 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 23161 60
+
+./remtstm_a tstm95 8012 create m2mc_36 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 2961 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_36_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 8561 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_36 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 12681 40
+./remtstm_a tstm95 8012 create lu_36 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 15481 40
+./remtstm_a tstm95 8012 create fix2msms_36 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 19021 60 FIX2SMSINTERF_36
+./remtstm_a tstm95 8012 create m2fixsms_36 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 23221 60
+
+./remtstm_a tstm95 8012 create m2mc_37 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 3041 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_37_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 8641 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_37 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 12721 40
+./remtstm_a tstm95 8012 create lu_37 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 15521 40
+./remtstm_a tstm95 8012 create fix2msms_37 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 19081 60 FIX2SMSINTERF_37
+./remtstm_a tstm95 8012 create m2fixsms_37 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 23281 60
+
+./remtstm_a tstm95 8012 create m2mc_38 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 3121 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_38_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 8721 80 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_38 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 12761 40
+./remtstm_a tstm95 8012 create lu_38 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 15561 40
+./remtstm_a tstm95 8012 create fix2msms_38 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 19141 60 FIX2SMSINTERF_38
+./remtstm_a tstm95 8012 create m2fixsms_38 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 23341 60
+
+./remtstm_a tstm95 8012 create m2mc_39 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 3201 240 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_39_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 8801 240 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_39 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 12801 120
+./remtstm_a tstm95 8012 create lu_39 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 15601 120
+./remtstm_a tstm95 8012 create fix2msms_39 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 19201 180 FIX2SMSINTERF_39
+./remtstm_a tstm95 8012 create m2fixsms_39 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 23401 180
+
+./remtstm_a tstm95 8012 create m2mc_40 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 3441 240 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_40_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 9041 240 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_40 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 12921 120
+./remtstm_a tstm95 8012 create lu_40 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 15721 120
+./remtstm_a tstm95 8012 create fix2msms_40 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 19381 180 FIX2SMSINTERF_40
+./remtstm_a tstm95 8012 create m2fixsms_40 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 23581 180
+
+./remtstm_a tstm95 8012 create m2mc_41 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 3681 240 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_41_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 9281 240 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_41 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 13041 120
+./remtstm_a tstm95 8012 create lu_41 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 15841 120
+./remtstm_a tstm95 8012 create fix2msms_41 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 19561 180 FIX2SMSINTERF_41
+./remtstm_a tstm95 8012 create m2fixsms_41 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 23761 180
+
+./remtstm_a tstm95 8012 create m2mc_42 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 3921 240 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_42_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 9521 240 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_42 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 13161 120
+./remtstm_a tstm95 8012 create lu_42 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 15961 120
+./remtstm_a tstm95 8012 create fix2msms_42 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 19741 180 FIX2SMSINTERF_42
+./remtstm_a tstm95 8012 create m2fixsms_42 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 23941 180
+
+./remtstm_a tstm95 8012 create m2mc_43 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 4161 240 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_43_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 9761 240 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_43 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 13281 120
+./remtstm_a tstm95 8012 create lu_43 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 16081 120
+./remtstm_a tstm95 8012 create fix2msms_43 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 19921 180 FIX2SMSINTERF_43
+./remtstm_a tstm95 8012 create m2fixsms_43 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 24121 180
+
+./remtstm_a tstm95 8012 create m2mc_44 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 4401 240 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_44_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 10001 240 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_44 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 13401 120
+./remtstm_a tstm95 8012 create lu_44 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 16201 120
+./remtstm_a tstm95 8012 create fix2msms_44 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 20101 180 FIX2SMSINTERF_44
+./remtstm_a tstm95 8012 create m2fixsms_44 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 24301 180
+
+./remtstm_a tstm95 8012 create m2mc_45 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 4641 240 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_45_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 10241 240 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_45 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 13521 120
+./remtstm_a tstm95 8012 create lu_45 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 16321 120
+./remtstm_a tstm95 8012 create fix2msms_45 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 20281 180 FIX2SMSINTERF_45
+./remtstm_a tstm95 8012 create m2fixsms_45 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 24481 180
+
+./remtstm_a tstm95 8012 create m2mc_46 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 4881 240 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_46_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 10481 240 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_46 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 13641 120
+./remtstm_a tstm95 8012 create lu_46 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 16441 120
+./remtstm_a tstm95 8012 create fix2msms_46 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 20461 180 FIX2SMSINTERF_46
+./remtstm_a tstm95 8012 create m2fixsms_46 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 24661 180
+
+./remtstm_a tstm95 8012 create m2mc_47 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 5121 240 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_47_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 10721 240 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_47 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 13761 120
+./remtstm_a tstm95 8012 create lu_47 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 16561 120
+./remtstm_a tstm95 8012 create fix2msms_47 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 20641 180 FIX2SMSINTERF_47
+./remtstm_a tstm95 8012 create m2fixsms_47 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 24841 180
+
+./remtstm_a tstm95 8012 create m2mc_48 v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 5361 240 M2MCCORE
+./remtstm_a tstm95 8012 create m2mc_48_mtc v4/m2mc_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 10961 240 M2MCCORE
+./remtstm_a tstm95 8012 create m2fixc_48 m2fixc.tsm Nom4500_ETH_A_MsDb_Mx10A 13881 120
+./remtstm_a tstm95 8012 create lu_48 mm_watch.tsm Nom4500_ETH_A_MsDb_Mx10A 16681 120
+./remtstm_a tstm95 8012 create fix2msms_48 v4/fix2msms_interf.tsm Nom4500_ETH_A_MsDb_Mx10A 20821 180 FIX2SMSINTERF_48
+./remtstm_a tstm95 8012 create m2fixsms_48 m2fixsms.tsm Nom4500_ETH_A_MsDb_Mx10A 25021 180
+

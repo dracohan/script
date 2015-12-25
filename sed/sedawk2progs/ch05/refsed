@@ -1,0 +1,42 @@
+# refsed -- add formatting codes to reference pages
+/^\*\**\*$/d
+/^	/s///
+/:	/s//:/
+/NAME:/ {
+	s//.Rh 0 "/
+	s/ - /" "/
+	s/$/"/
+}
+/SYNTAX:/,/^$/ {
+	/SYNTAX:/c\
+.Rh Syntax\
+.in +5n\
+.ft B\
+.nf\
+.na
+	/^$/c\
+.in -5n\
+.ft R\
+.fi\
+.ad b
+}
+/USAGE:/,/^$/ {
+	/USAGE:/c\
+.Rh Usage
+	/\(.*\)	- \(.*\)/s//.IP "\\fI\1\\fR" 15n\
+\2./
+}
+/DESC:/,/RETURNS/ {
+	/DESC:/i\
+.LP
+	s/DESC: *$/.Rh Description/
+	s/DESC: \(.*\)/.Rh Description\
+\1/
+	s/^$/.LP/
+}
+/RETURNS:/,/^$/ {
+	/RETURNS:/c\
+.Rh "Return Value"
+	s/There is no return value\.*/None./
+}
+/^$/d

@@ -1,0 +1,69 @@
+#!/bin/sh
+#  PYL 6Jun06
+# Display erlang for moc and mtc profiles
+# 
+#  PYL 12Jul06
+# Write result in erlang.txt for tstmgui v2.0
+#
+#  PYL 3May07
+# Optimize
+#
+#  PYL 6Jun09
+# JM-LeDorze requirement : display erlang in loop
+
+# t_loop = period time in second to display load erlang
+t_loop=3
+
+echo "Display load in erlang every $t_loop seconds. => Ctrl_C to stop"
+
+status () {
+for file in `ls -1 status_abis*`
+do
+    # echo $file
+     ./$file  | strings | awk  '{ print $1, $10}' > $file.txt
+done
+}
+
+prof () {
+sum=0
+for file in `ls -1 status_abis*.txt`
+do
+    s=`cat $file  | grep -a $1 | awk '{ printf("%d", $2) }'`
+    #cat $file  
+    sum=`expr $s + $sum`
+done
+    #echo "prof=$1 	 load=$sum erlangs"
+}
+clear () {
+for file in `ls -1 status_abis*.txt`
+do
+    rm $file
+done
+}
+clear
+
+while [ 1 ]
+do
+
+status
+
+total=0
+prof moc_ms
+total=`expr $total + $sum`
+
+prof mtc
+total=`expr $total + $sum`
+
+prof moc_fix
+total=`expr $total + $sum`
+
+    d=`date "+%F %T"`
+    echo "$d total=$total erlangs"
+    #echo -n $total > erlang.txt
+    sleep $t_loop
+
+
+clear
+
+done
+exit

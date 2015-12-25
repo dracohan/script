@@ -1,0 +1,14 @@
+#! /bin/sh
+# getmac - read macro definition for $1 from package $2
+file=/usr/lib/macros/mmt
+mac="$1"
+case $2 in
+ -ms) file="/work/macros/current/tmac.s";;
+ -mm) file="/usr/lib/macros/mmt";;
+ -man) file="/usr/lib/macros/an";;
+esac
+sed -n "
+/^\.de *$mac/,/^\.\./{
+p
+/^\.\./q
+}" $file

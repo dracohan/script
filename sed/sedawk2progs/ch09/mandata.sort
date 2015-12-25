@@ -1,0 +1,6 @@
+.SH "Name"
+XSubImage \e(em create a subimage from part of an image.
+.SH "Related Commands"
+XDestroyImage, XPutImage, XGetImage, 
+XCreateImage, XGetSubImage, XAddPixel, 
+XPutPixel, XGetPixel, ImageByteOrder.

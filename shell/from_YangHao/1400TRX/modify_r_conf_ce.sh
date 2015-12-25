@@ -1,0 +1,11 @@
+#!/bin/sh
+echo "BSCSTEERFILE ABC/01A/321;" > MODIFY_R_CONF_CE.STR
+echo >>  MODIFY_R_CONF_CE.STR
+for var in `cat 50TCU.txt`
+do
+	echo "MODIFY R_CONF_CE TUPLE 0D${var} D_RSL_CONF 0X0000  MEMDISKBACK;">>MODIFY_R_CONF_CE.STR
+done
+for var in `cat 300TCU.txt`
+do
+        echo "MODIFY R_CONF_CE TUPLE 0D${var} D_RSL_CONF 0X0004  MEMDISKBACK;">>MODIFY_R_CONF_CE.STR
+done

@@ -1,0 +1,53 @@
+/*---------------------------------------------------------
+/*
+/*-----------------------------------------------------------------
+/* Description: npf template to build LRC SDP 
+/* $Id: template.npf,v 1.1 2012-01-06 06:06:30 jyliu Exp $
+/*-----------------------------------------------------------------
+/*      S D P   DSB DATABASE DOWNLOAD PRODUCTION
+/* & with Build1 AT42 data model based on SAT0402D with new BTS
+/*                      
+/*
+/* Date     : 07.05.01
+/* NPF      : BSC04L.NPF
+/*              
+/* BSC      : BSCMAT04.04D
+/* BTS      : BM0SATD4.04D (M4M & G3 BTS A5/0) 
+/* BTS      : BM1SATD4.04D (M4M & G3 BTS A5/1)    
+/* BTS      : BM2SATD4.04D (M4M & G3 BTS A5/2)
+/* BTS      : BTFSAT01.03B (G2 FUMO) Removed!!!
+/* BTS      : BTMSAT02.02A (BTS) Removed!!! FILE_ID = 1105
+/* BTS      : BD0SAT02.02B (DRFU A5/0) 
+/* BTS      : BD1SAT02.02B (DRFU A5/1)    
+/* BTS      : BD2SAT02.02B (DRFU A5/2)      
+/* MIG  : ???
+/* TRIT : AT61
+/* Standardpaket Release 8
+/*--------------------------------------------------------------
+NPF_file,C,__NPF_FILE__,BS,0
+SLD_label,C,BSCA__RELEASE_CHAR__,BS,0
+MOD_nbr,C,BSCA__RELEASE_CHAR__,BS,0
+Production_mode,C,BSS,BS,0
+Site_name,C,BDC package Release 8,BS,0
+Num_of_btsswdb,D,1,BS,0
+Num_of_bts,D,1,BS,0
+#SWDB,C,__BSCdelivery_SIL__,IF,0
+#BTSSWDB,C,__BTSdelivery_IP_SIL__,IF,1
+#MT120SWDB,C,__MT120delivery_SIL__,IF,0
+#MXPF,C,__BSCdelivery_TAR__,IF,0
+
+#TCSL_VER,C,1,IF,0
+#INT_VER,C,34,IF,0
+
+#BSS_MF,C,__SDPBASE__/package/BSSMA__RELEASE_CHAR__01.01A,OF,0
+#BSSMAP,C,__SDPBASE__/package/BSSXA__RELEASE_CHAR__01.01A,OF,0
+#CPF_MF,C,__SDPBASE__/package/BSSCA__RELEASE_CHAR__01.01A,OF,0
+#DLS_MF,C,__SDPBASE__/package/BSSLA__RELEASE_CHAR__01.01A,OF,0
+#MT120_MF,C,__SDPBASE__/package/__MT120_MTOF__,OF,0
+#BSCXPF,C,__SDPBASE__/package/BXPFA__RELEASE_CHAR__01.01A,OF,0
+
+/*---------------------------------------------
+/*---------------------------------------------
+BTS_Index,D,1,CE,1
+#OMUFTYP,C,00O2,CE,1
+Load_index,D,1,CE,1

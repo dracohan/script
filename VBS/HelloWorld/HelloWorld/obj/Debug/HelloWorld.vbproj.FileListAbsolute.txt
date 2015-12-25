@@ -1,0 +1,5 @@
+C:\Users\baoweih\AppData\Local\Temporary Projects\HelloWorld\obj\Debug\HelloWorld.Resources.resources
+C:\Users\baoweih\AppData\Local\Temporary Projects\HelloWorld\obj\Debug\HelloWorld.vbproj.GenerateResource.Cache
+D:\学习\Projects\HelloWorld\HelloWorld\bin\Debug\HelloWorld.exe.config
+D:\学习\Projects\HelloWorld\HelloWorld\obj\Debug\HelloWorld.Resources.resources
+D:\学习\Projects\HelloWorld\HelloWorld\obj\Debug\HelloWorld.vbproj.GenerateResource.Cache
