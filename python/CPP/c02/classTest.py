@@ -1,4 +1,5 @@
 #This is a class test script that on master branch
+# change1 in master br
 
 class FooClass(object):
     """my very first class: FooClass"""
