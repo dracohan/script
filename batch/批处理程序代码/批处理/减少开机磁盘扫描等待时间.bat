@@ -1,0 +1,1 @@
+%systemroot%\system32\chkntfs /t:0

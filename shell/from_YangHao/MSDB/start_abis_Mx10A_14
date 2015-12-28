@@ -1,0 +1,4 @@
+#!/bin/sh
+#startAbisTstm -p 8014 -l AbisTstm_Mx10A_14.log -d edge -t 800000
+startAbisTstm -p 8014 -d edge -t 800000
+exit

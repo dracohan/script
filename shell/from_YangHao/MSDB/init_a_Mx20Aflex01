@@ -1,0 +1,4 @@
+#!/bin/sh
+./remtstm_a tstm95 8010 userpath /home/mx95_aoip/mx20a_aflex01/user
+./remtstm_a tstm95 8010 exec_immediate_resp ctl/stack_a.tsm A_Mx10A_MultiProcess.tsm Nom4500_ETH_A_MsDb_Mx10A 25202
+exit

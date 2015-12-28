@@ -1,0 +1,13 @@
+XView: programs; initialization 45
+XV_INIT_ARGS~macro      46
+Xv_object~type  49
+Xv_singlecolor~type     80
+graphics: (see also server image)
+graphics, XView model   83
+X Window System: events 84
+graphics, CANVAS_X_PAINT_WINDOW 86
+X Window System, X Window ID for paint window   87
+toolkit (See X Window System).
+graphics: (see also server image)
+Xlib, repainting canvas 88
+Xlib.h~header file      89 

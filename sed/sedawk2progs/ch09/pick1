@@ -1,0 +1,11 @@
+awk -v TOPNUM=$1 '
+# pick1 - pick one random number out of y 
+# main routine
+BEGIN {
+# seed random number using time of day 
+	srand() 
+# get a random number
+	select = 1 + int(rand() * TOPNUM)
+# print pick
+	print select
+}' 

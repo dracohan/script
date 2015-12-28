@@ -1,0 +1,4 @@
+UUCP Status Menu
+Look at files in PUBDIR:find /var/spool/uucppublic -print
+Look at recent status in LOGFILE:tail /var/spool/uucp/LOGFILE
+Look for lock files:ls /var/spool/uucp/*.LCK

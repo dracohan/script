@@ -1,0 +1,8 @@
+#!/bin/sh
+remtstm_abis tstm2_4 8004 status moc_ms_12
+remtstm_abis tstm2_4 8004 status mtc_12
+remtstm_abis tstm2_4 8004 status moc_fix_12
+remtstm_abis tstm2_4 8004 status lu_12
+remtstm_abis tstm2_4 8004 status mtsms_12
+remtstm_abis tstm2_4 8004 status moc_sms_12
+exit

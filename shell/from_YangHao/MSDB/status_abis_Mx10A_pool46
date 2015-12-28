@@ -1,0 +1,8 @@
+#!/bin/sh
+remtstm_abis tstm3_2 8010 status moc_ms_46
+remtstm_abis tstm3_2 8010 status mtc_46
+remtstm_abis tstm3_2 8010 status moc_fix_46
+remtstm_abis tstm3_2 8010 status lu_46
+remtstm_abis tstm3_2 8010 status mtsms_46
+remtstm_abis tstm3_2 8010 status moc_sms_46
+exit

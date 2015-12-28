@@ -1,0 +1,340 @@
+#!/bin/bash
+# POLO Generator
+# Lastmodi  User        Description
+# WANGNAN   2012-11-14  Only one package stored for one configuration
+# WANGNAN   2012-10-17  Avoid populating POLOCHK.REP
+# WANGNAN   2012-09-25  Use login client machine IP as default Display_IP
+#                       make 1 as the default value of VM
+#                       auto grab CCPNUM from bssdef.csv
+# WANGNAN   2012-09-19  Add consistency checking for CCPNum parameter
+#                       grab polo return code according to DCTP00770659
+# WANGNAN   2012-08-31  Introduce Architecture modification
+# WANGNAN   2012-07-18  Remove Bsspackage while ISO generated(for LRC)
+# WANGNAN   2012-07-06  fixxed -u and -c. Add error code  description.
+# WANGNAN   2012-07-03  Remove -u and -c
+# WANGNAN   2012-06-19  chmod ugo+rw after everything to avoid run-time write-access to polotool
+# WANGNAN   2012-06-06  Fix a bug: SDP extraction anyway.
+# WANGNAN   2012-06-05  Auto extract polo tool
+# WANGNAN   2012-06-05  Auto correct Customer Identifier
+# WANGNAN   2012-06-05  Auto extract official SDP TAR
+# WANGNAN   2012-06-05  Add -c parameter to specify officil CDE table
+# WANGNAN   2012-06-05  Add VM Template Name parameter
+# WANGNAN   2012-05-16  backup ISO instead of BSSPackage
+# WANGNAN   2012-05-15  Add CCPNumber parameter
+# WANGNAN 	2012-05-03	Reject running on sbardr98
+# WANGNAN   2012-04-27  Remove the Checking argument.
+# WANGNAN   2012-01-09  back up doc and conf files to target package
+# WANGNAN	2011-12-14	Remove the dependency to POLO delivery path, user need to specify their own polo path.
+# WANGNAN	2011-03-14	Ignore original SDP name case condition in bssdef.csv
+#		        		Fixxed a bug that require $SDP even no -u applied
+# WANGNAN	2011-03-10	Auto detect MX or G2 from POLO vesion
+# WANGNAN	2011-03-10	Add -u option to allow auto update of SDP and CDE in bssdef.csv
+# WANGNAN	2011-03-01	Add support for sub directory of POLO tool
+# WANGNAN	2011-02-22	Use local delivery of BPC; Auto overwrite CAE Template; Check POLOCHK.REP to confirm whether polo was successful.
+# WANGNAN   2010-12-08  Extract Universal
+
+#    _                    _   ____     __                  _   _             
+#   | |                  | | |___ \   / _|                | | (_)            
+#   | |     _____   _____| |   __) | | |_ _   _ _ __   ___| |_ _  ___  _ __  
+#   | |    / _ \ \ / / _ \ |  |__ <  |  _| | | | '_ \ / __| __| |/ _ \| '_ \ 
+#   | |___|  __/\ V /  __/ |  ___) | | | | |_| | | | | (__| |_| | (_) | | | |
+#   |______\___| \_/ \___|_| |____/  |_|  \__,_|_| |_|\___|\__|_|\___/|_| |_|
+#                                                                            
+# 
+
+function CAELABEL()
+{
+    SetDebugFlag 3;
+	[ $ARCHI = MX ] && echo CAEX
+	[ $ARCHI = G2 ] && echo CAET
+}
+
+function help()
+{
+	echo "pologen [ -v VMTemplate ] [ -n CCPNumber ] [ -u SDP ] [ -c CDE ] <Target> <POLO Tool> [Observer] "
+	echo "-u: update SDP info in bssdef.csv automatically."
+	echo "-c: update CDE info in bssdef.csv automatically if needed. Only valid when -u is applied."
+    echo "<POLO Tool>: path of POLO_INSTDIR with automatically prefix of $HOMEDIR/POLOTOOL/"
+    echo "<TARGET>: Your polo target at $HOMEDIR/BASE"
+    echo "[SDP]: necessary if -u is used, should be the rest path under /data_lab/SDP/STORAGE/" 
+    echo "[CDE]: necessary if -c is used, should be the rest path under /data_lab/SDP/STORAGE/OFFICIAL" 
+    echo "[Observer]: IP addr of the host where you run your X."
+    echo "[-v]: It is fixxed to be 1. Only needed in LRC.";
+    echo "[-n]: Provide the CCP VMs Number including standby one. Only needed in LRC.";
+    echo "e.g. pologen -u OFFICIAL/SDPTXAZ20.01E MX_B11_MR3_IURG AZ20D-MX 172.24.179.1"
+    DEBUGINFO "-------------------------------------------"
+    DEBUGINFO "WANG NAN I: nan.i.wang@alcatel-sbell.com.cn"
+    DEBUGINFO "-------------------------------------------"
+}
+
+function CAEDeduction()
+{
+    SetDebugFlag 3;
+    [ TRUE = "CAEEN" ] &&
+    {
+    	# CAETemplate
+    	CAETVER=$(cat $POLO_SOURCE/$POLOLABEL/DELIVNOTE.DOC|grep $(CAELABEL)|sed 's/.*CAE.//'|sed 's/(u2vob)$//'|sed 's/ //')-$ARCHI
+    	[ -d $CAET_SOURCE/$CAETVER ] && cp $CAET_SOURCE/$CAETVER/*tes $POLO_BASEDIR/$TARGET/logical_conf/TES_AT10.01T/CAE_TPL.TES
+    	[ -d $CAET_SOURCE/$CAETVER ] || HIGHLIGHT "CAE Template not matched, please make sure it is correctly configured."
+    }
+}
+#    _                    _   ___     __                  _   _             
+#   | |                  | | |__ \   / _|                | | (_)            
+#   | |     _____   _____| |    ) | | |_ _   _ _ __   ___| |_ _  ___  _ __  
+#   | |    / _ \ \ / / _ \ |   / /  |  _| | | | '_ \ / __| __| |/ _ \| '_ \ 
+#   | |___|  __/\ V /  __/ |  / /_  | | | |_| | | | | (__| |_| | (_) | | | |
+#   |______\___| \_/ \___|_| |____| |_|  \__,_|_| |_|\___|\__|_|\___/|_| |_|
+#                                                                           
+#  
+
+function PreparePOLOTool()
+{
+    
+    SetDebugFlag 2;
+    if [ -f $POLO ]
+    then
+        :
+    else
+        [ -d "$POLO_INSTDIR" ] || mkdir $POLO_INSTDIR;
+        
+        ## it is valid only for LRC
+        [ -f /datatool/polo/download/$POLOLABEL.tar ] || ErrorExit "Specified POLOTOOL does not exist.";
+        cp /datatool/polo/download/$POLOLABEL.tar $POLO_INSTDIR/
+        ##
+        
+        cd $POLO_INSTDIR;
+        tar -xvf $POLOLABEL.tar
+        cd .. ; chmod -Rf ugo+rw POLOLABEL
+        cd $INITIALPWD;
+    fi
+}
+
+function UpdateBSSDEFInfo()
+{
+    SetDebugFlag 2;
+    TMPHWCONFIG="/tmp/hwconfig";
+    HWCONFIG=$HOMEDIR/BASE/$TARGET/hw_conf/bssdef.csv
+
+    [ -z "$CCPNUM" ] || {
+    ## Check CCP Num if any
+    CFGTYPE=$(( $CCPNUM - 1 ));
+    $(awk 'BEGIN{FS=OFS=";";CFGTYPE_ITEM=$3;}{if($3!~/BscConfig/&&$3!=""&&CFGTYPE!=$3)print("ErrorExit CCPNum does not equal to ConfigType+1, modify bssdef.csv to fix.");}' CFGTYPE=$CFGTYPE $HWCONFIG);
+    DEBUGEN && DISARGS CFGTYPE CCPNUM HWCONFIG && SUSP;
+    }
+    [ -z "$SDP" ] || {
+        BareSDP=$(echo $SDP|sed 's/^.*\///');
+        
+        
+        ## Extract bare sdp
+        [ -d $HOMEDIR/BASE/SDP/$SDP ] ||[ -f $HOMEDIR/BASE/SDP/$SDP.TAR ] || ErrorExit "Specified SDP does not exist.";
+        [ -d $HOMEDIR/BASE/SDP/$SDP ] ||[ -f $HOMEDIR/BASE/SDP/$SDP.TAR ] && {
+            cd $HOMEDIR/BASE/SDP/OFFICIAL
+            [ -d $HOMEDIR/BASE/SDP/$SDP ] ||  tar xvf $HOMEDIR/BASE/SDP/$SDP.TAR 
+        }
+        ## create sdp link
+        [ -d $HOMEDIR/BASE/$BareSDP ] || ln -s $HOMEDIR/BASE/SDP/$SDP $HOMEDIR/BASE/$BareSDP ;
+        
+        
+        ## retrieve CDE if not provided
+        if [ -z "$CDE" ]
+        then
+            cd $HOMEDIR/BASE/$BareSDP
+            CDE=$(ls *CDE) || ErrorExit "CDE file not found in $SDP, it should be specified."
+            DEBUGEN && DISARGS CDE
+            cd $HOMEDIR/BASE
+            [ -f $HOMEDIR/BASE/cde/$CDE ] || cp $SDP/$CDE $HOMEDIR/BASE/cde/
+        else
+            DEBUGEN && DISARGS HOMEDIR CDE SDP && SUSP
+            cd $HOMEDIR/BASE
+            [ -f $HOMEDIR/BASE/cde/$CDE ] || cp SDP/OFFICIAL/$CDE $HOMEDIR/BASE/cde/
+        fi
+        
+        ## deduce Customer Identifier
+        CI=$(echo $CDE|sed 's/^....//'|sed 's/...\.CDE$//');
+        
+        
+        ## Update bssdef.csv
+        #eval "sed 's/SDP.....\....;.;/$BareSDP;$CI;/' $HWCONFIG|sed 's/sdp.....\....;.;/$BareSDP;$CI;/'|sed 's/........\.CDE/$CDE/'>/tmp/hwconfig"
+        awk 'BEGIN{FS=OFS=";";SDP_ITEM=$6;CI_ITEM=$7;CDE_ITEM=$10;}{ if($6!~/Sdp_package/ && SDP!="")$6=SDP;if($7!~/Customer_identity/ && CI!="")$7=CI;if($10!~/Cde_data/ && CDE!="")$10=CDE;print $0;}' SDP=$BareSDP CDE=$CDE CI=$CI $HWCONFIG > $TMPHWCONFIG;
+        mv $HWCONFIG ${HWCONFIG}_bk;
+        mv $TMPHWCONFIG $HWCONFIG;
+        DEBUGINFO "$HWCONFIG is updated according to $BareSDP and $CDE";
+    }
+
+    
+}
+
+#    _                    _   __    __                  _   _             
+#   | |                  | | /_ |  / _|                | | (_)            
+#   | |     _____   _____| |  | | | |_ _   _ _ __   ___| |_ _  ___  _ __  
+#   | |    / _ \ \ / / _ \ |  | | |  _| | | | '_ \ / __| __| |/ _ \| '_ \ 
+#   | |___|  __/\ V /  __/ |  | | | | | |_| | | | | (__| |_| | (_) | | | |
+#   |______\___| \_/ \___|_|  |_| |_|  \__,_|_| |_|\___|\__|_|\___/|_| |_|
+#                                                                         
+#      
+function PackingPOLO()
+{
+    SetDebugFlag 1;
+    
+#DATE=$(date +%Y%m%d%H%M%S)
+
+    if [ -d $POLO_BASEDIR/$TARGET/ISO/ ]
+    then
+        BKTARGET=$POLO_BASEDIR/$TARGET/ISO
+        DEBUGEN && HIGHLIGHT About to remove BssPackage... && SUSP;
+        rm -rf $POLO_BASEDIR/$TARGET/BssPackage
+    else
+        BKTARGET=$POLO_BASEDIR/$TARGET/BssPackage
+    fi
+
+    cd $POLO_BASEDIR/$TARGET
+    cp -r hw_conf logical_conf $BKTARGET
+    mv doc $BKTARGET
+    rm -rf $HOMEDIR/STORAGE/$TARGET;
+    mv $BKTARGET $HOMEDIR/STORAGE/$TARGET;
+#-$DATE;
+    touch $HOMEDIR/STORAGE/$TARGET/$($POLO -v);
+    HIGHLIGHT "Polo package moved to $HOMEDIR/STORAGE/$TARGET";
+    #| tee  -a $HOMEDIR/STORAGE/$TARGET-$DATE/doc/POLOCHK.REP
+}
+function Initialize()
+{
+    [ $(hostname) == "sbardr98" ] && echo "Please generating polo package on sbardx4b or sbardr99!" && exit;
+    umask 000
+    DEBUGLEVEL=0;
+    PWD=$(pwd);
+    INITIALPWD=$PWD;
+    HOMEDIR=/data_lab/POLO
+    export POLO_BASEDIR=$HOMEDIR/BASE;
+    . /data_lab/Shells/BASH.lib
+    
+    
+    POLO_SOURCE=/ap/polo/deliver_notes/polo
+    CAET_SOURCE=/ap/polo/deliver_notes/caet
+    
+    PVFILE=POLO$UID;
+    PV_require $PVFILE;
+}
+
+function GetArguments()
+{
+    SetDebugFlag 1;
+
+    TARGET=$1 && shift
+    [ -z "$TARGET" ] && ErrorExit Configuration directory not recognized.
+    TARGET=$(echo $TARGET|sed 's/\///');
+
+
+
+
+    POLOLABEL=$1 && shift
+    [ -z "$POLOLABEL" ] && ErrorExit "Polo tool version not recognized.";
+    POLO_INSTDIR=$HOMEDIR/POLOTOOL/$POLOLABEL
+    POLO=$POLO_INSTDIR/bin/polo
+    export POLO_INSTDIR POLO
+
+
+
+    OBSERV=$1 && shift
+    if [ -z "$OBSERV" ]
+    then
+        grabDisplay;
+    else
+        export DISPLAY=${OBSERV}:0.0
+    fi
+    
+    
+    DEBUGEN && DISARGS TARGET POLOLABEL && SUSP;
+    
+
+
+    
+    
+    ## architecture detection
+    echo $POLOLABEL|grep "an" >> /dev/null && RELEASE=lr;
+    echo $POLOLABEL|grep "AN" >> /dev/null && RELEASE=lr;
+    DEBUGEN && DISARGS RELEASE && SUSP;
+    if [ "$RELEASE" = "lr" ]
+    then
+        [ -z "$VM" ] &&{
+            VM=1;
+        }
+        [ -z "$CCPNUM" ] &&{
+            HWCONFIG=$HOMEDIR/BASE/$TARGET/hw_conf/bssdef.csv
+            CCPNUM=$(awk 'BEGIN{FS=OFS=";";CFGTYPE_ITEM=$3;}{if($3!~/BscConfig/&&$3!="")print($3+1);}' $HWCONFIG);
+        }
+    else
+        :
+    fi
+
+}
+
+
+function Generate()
+{
+    SetDebugFlag 1;
+    $POLO -v;
+    $POLO $TARGET $CCPNUM $VM; 
+    result=$?;
+    [ -f $POLO_BASEDIR/$TARGET/doc/POLOCHK.REP ] && {
+        cat $POLO_BASEDIR/$TARGET/doc/POLOCHK.REP;
+        cat $POLO_BASEDIR/$TARGET/doc/POLOCHK.REP | grep "Polo terminated successfully" >>/dev/null && return 0;
+    }
+    return 1;
+}
+
+function Prepare()
+{
+    SetDebugFlag 1;
+    UpdateBSSDEFInfo;
+    PreparePOLOTool;
+    [ -d $POLO_BASEDIR/$TARGET/doc ] && rm -rf $POLO_BASEDIR/$TARGET/doc;
+}
+#    __  __       _              ______                _   _             
+#   |  \/  |     (_)            |  ____|              | | (_)            
+#   | \  / | __ _ _  ___  _ __  | |__ _   _ _ __   ___| |_ _  ___  _ __  
+#   | |\/| |/ _` | |/ _ \| '__| |  __| | | | '_ \ / __| __| |/ _ \| '_ \ 
+#   | |  | | (_| | | (_) | |    | |  | |_| | | | | (__| |_| | (_) | | | |
+#   |_|  |_|\__,_| |\___/|_|    |_|   \__,_|_| |_|\___|\__|_|\___/|_| |_|
+#               _/ |                                                     
+#              |__/                                                      
+
+Initialize;
+
+while getopts 'd:u:n:c:v:' OPT
+do
+    case $OPT in
+        d)
+            DEBUGLEVEL=$OPTARG;
+            ;;
+        u)
+            SDP=$OPTARG
+            ;;
+        n)
+            CCPNUM=$OPTARG
+            ;;
+        c)
+            CDE=$OPTARG
+            ;;
+        v)
+            VM=$OPTARG
+            ;;
+        ?)
+            ErrorExit Unknow option!!!
+            ;;
+    esac
+done
+
+shift $(($OPTIND - 1))
+
+GetArguments $*;
+Prepare;
+Generate;
+
+if [ $? = 0 ]
+then
+    PackingPOLO;
+    NormalExit;
+else
+    ErrorExit "Generation Failure.";
+fi

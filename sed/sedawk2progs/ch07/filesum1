@@ -1,0 +1,10 @@
+ls -l $* | awk '
+BEGIN { print "BYTES", "\t", "FILE" }
+
+{
+	sum += $5
+	++filenum
+	print $5, "\t", $9 
+}
+
+END { print "Total: ", sum, "bytes (" filenum " files)" }'

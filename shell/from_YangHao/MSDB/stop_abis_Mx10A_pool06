@@ -1,0 +1,6 @@
+#!/bin/sh
+remtstm_abis tstm2_3 8003 stop moc_ms_06
+remtstm_abis tstm2_3 8003 stop moc_fix_06
+remtstm_abis tstm2_3 8003 stop lu_06
+remtstm_abis tstm2_3 8003 stop moc_sms_06
+exit

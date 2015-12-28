@@ -1,0 +1,30 @@
+
+******************************************************************
+
+NAME:	DBclose - closes a database
+
+SYNTAX:
+	void	DBclose(fdesc)
+		DBFILE *fdesc;
+
+USAGE:
+	fdesc	- pointer to database file descriptor
+
+DESC: 
+DBclose() closes a file when given its database file descriptor.  
+Your pending writes to that file will be completed before the
+file is closed.  All of your update locks are removed. 
+*fdesc becomes invalid.
+
+Other users are not effected when you call DBclose().  Their update
+locks and pending writes are not changed.
+
+Note that there is no default file as there is in BASIC.  
+*fdesc must specify an open file.
+
+DBclose() is analogous to the CLOSE statement in BASIC.
+
+RETURNS:
+	There is no return value
+
+******************************************************************

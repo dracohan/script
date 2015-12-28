@@ -1,0 +1,8 @@
+#!/bin/sh
+remtstm_abis tstm3_3 8011 status moc_ms_31
+remtstm_abis tstm3_3 8011 status mtc_31
+remtstm_abis tstm3_3 8011 status moc_fix_31
+remtstm_abis tstm3_3 8011 status lu_31
+remtstm_abis tstm3_3 8011 status mtsms_31
+remtstm_abis tstm3_3 8011 status moc_sms_31
+exit

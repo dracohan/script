@@ -1,0 +1,6 @@
+#!/bin/sh
+remtstm_abis tstm3_8 8016 run moc_ms_47 462
+remtstm_abis tstm3_8 8016 run moc_fix_47 925
+remtstm_abis tstm3_8 8016 run lu_47 46
+remtstm_abis tstm3_8 8016 run moc_sms_47 616
+exit

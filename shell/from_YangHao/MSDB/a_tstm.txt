@@ -1,0 +1,17 @@
+host    port	LocalDir
+tstm95 8010	/home/mx95_aoip/mx20a_aflex01
+tstm95 8009	/home/mx95_aoip/mx20a_aflex02
+tstm95 8008	/home/mx95_aoip/mx20a_aflex03
+tstm95 8007	/home/mx95_aoip/mx20a_aflex04
+tstm95 8006	/home/mx95_aoip/mx20a_aflex05
+tstm95 8005	/home/mx95_aoip/mx20a_aflex06
+tstm95 8004	/home/mx95_aoip/mx20a_aflex07
+tstm95 8003	/home/mx95_aoip/mx20a_aflex08
+tstm95 8002	/home/mx95_aoip/mx20a_aflex09
+tstm95 8001	/home/mx95_aoip/mx20a_aflex10
+tstm95 8000	/home/mx95_aoip/mx20a_aflex11
+tstm95 8011	/home/mx95_aoip/mx20a_aflex12
+tstm95 8012	/home/mx95_aoip/mx20a_aflex13
+tstm95 8013	/home/mx95_aoip/mx20a_aflex14
+tstm95 8014	/home/mx95_aoip/mx20a_aflex15
+tstm95 8015	/home/mx95_aoip/mx20a_aflex16

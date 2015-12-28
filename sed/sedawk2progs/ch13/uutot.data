@@ -1,0 +1,10 @@
+isla!nuucp S (8/3-16:10:17) (C,126,25) [ttyi1j] -> 1131/4.880 secs, 231 bytes/sec
+isla!nuucp S (8/3-16:10:20) (C,126,26) [ttyi1j] -> 149/0.500 secs, 298 bytes/sec
+isla!sue S (8/3-16:10:49) (C,126,27) [ttyi1j] -> 646/25.230 secs, 25 bytes/sec
+isla!sue S (8/3-16:10:52) (C,126,28) [ttyi1j] -> 145/0.510 secs, 284 bytes/sec
+uunet!uisla M (8/3-16:15:50) (C,951,1) [cui1a] -> 1191/0.660 secs, 1804 bytes/sec
+uunet!uisla M (8/3-16:15:53) (C,951,2) [cui1a] -> 148/0.080 secs, 1850 bytes/sec
+uunet!uisla M (8/3-16:15:57) (C,951,3) [cui1a] -> 1018/0.550 secs, 1850 bytes/sec
+uunet!uisla M (8/3-16:16:00) (C,951,4) [cui1a] -> 160/0.070 secs, 2285 bytes/sec
+uunet!daemon M (8/3-16:16:06) (C,951,5) [cui1a] <- 552/2.740 secs, 201 bytes/sec
+uunet!daemon M (8/3-16:16:09) (C,951,6) [cui1a] <- 102/1.390 secs, 73 bytes/sec    
