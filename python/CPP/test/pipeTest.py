@@ -53,4 +53,4 @@ def foo():
     #subprocess.check_output("yes | ls", shell=True, preexec_fn=permit_sigpipe())
     print(os.getcwd())
 
-foo()
+#foo()
