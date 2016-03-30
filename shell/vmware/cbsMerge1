@@ -1,0 +1,910 @@
+#!/bin/bash
+
+# Script to perform a single merge in a CBS context, given from and to branch
+# names and change number (and a Perforce client and log directory), up to
+# the point where merge conflicts are resolved by hand and then submitted.
+
+# Note:  Exit status values are allocated from 0 upward, with the default
+# being hard-coded to 99.  This leaves room for growth as the process
+# matures.
+
+
+export PATH="/build/apps/bin:/usr/lib64/qt-3.3/bin:/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin"
+
+me=$(basename "$0")
+
+# Add this script's directory to the beginning of $PATH, if it's not already
+# there.
+
+here=$(dirname "$0")
+if [[ "x$here" != x/* ]]
+then
+	here="${PWD}/${here}"
+fi
+if [[ ":${PATH}:" != *:${here}:* ]]
+then
+	export PATH="${here}:${PATH}"
+fi
+
+# Diagnostics
+
+logfile=
+
+logstream() {
+	if [[ "x$logfile" = "x" ]]
+	then
+		cat 1>&2
+	else
+		tee -a "$logfile" 1>&2
+	fi
+}
+
+warn() {
+	echo "$me:  WARNING:  $*" | logstream
+}
+
+errmsg() {
+	echo "$me:  ERROR:  $*" | logstream
+}
+
+infomsg() {
+	echo "$me:  INFO:  $*" | logstream
+}
+
+infostream() {
+	sed -e "s/^/$me:  INFO:  /" "$@" | logstream
+}
+
+# If there is no log directory set in the environment, assume a default
+# value.
+
+if [[ "x$LOGDIR" = "x" ]]
+then
+	export LOGDIR="$PWD/logs"
+fi
+
+# Scan and validate the command line.
+
+ok=1
+help=0
+#chnumsafter=0
+client="$P4CLIENT"
+chgnumsskip=0
+intopts=""
+logparent="$LOGDIR"
+logbase=
+submitskip=0
+popt=0
+#while getopts Ac:Fhl:pS c
+while getopts c:FhI:l:pS c
+do
+	case $c in
+#	A)	chnumsafter=1;;
+	c)	client="$OPTARG";;
+	F)	chgnumsskip=1;;
+	h)	help=1;;
+	I)	if expr "x$OPTARG" : 'x[Cdfiot][Cdfiot]*$' > /dev/null
+		then
+			intopts="$intopts -$OPTARG"
+		else
+			errmsg "Invalid cbsMerge1 options in -I$OPTARG"
+			ok=0
+		fi;;
+	l)	logparent=$(dirname "$OPTARG"); logbase=$(basename "$OPTARG");;
+	p)	popt=1;;
+	S)	submitskip=1;;
+	*)	errmsg "Unknown argument $c"; ok=0;;
+	esac
+done
+shift $(( $OPTIND - 1 ))
+
+if [[ $help -ne 0 ]]
+then
+	sed -e '/^#/d' <<-EOF
+	$me usage:
+	Perform a single merge in a CBS context.
+#	$me [-A|-F] [-c p4client] [-p] [-l logdir] [-S] from to @cln
+	$me [-F] [-c p4client] [-p] [-I intopts] [-l logdir] [-S] from to @cln
+#	-A = Move computation of contributing list of change numbers
+#	     until after a break-out shell.
+	-c p4client = Perforce client in which merge is done.
+	              Default is the value of \$P4CLIENT.
+	-F = Skip computing contributing list of change numbers (Faster).
+	-I intopts = pass one or more single-letter options specified as
+	             intopts to the cbsIntegrate1 program.  Supported options
+	             are:  C, d, f, i, o, and t.  For example, -Idt passes
+	             the -d and -t options to the cbsIntegrate1 program.
+	             May be repeated, for example, -Id -It have the same
+	             effect as -Idt.
+	-l logdir = directory to receive log files.  Default value is
+	            \$LOGDIR/<timestamp>.  The logdir directory must
+	            not exist, but its parent must exist.
+	-p = Proceed if client is only partially configured for the "to"
+	     branch.
+	-S = Skip submitting result to Perforce.
+	from = branch contributing to the merge.
+	to = branch receiving the merge.
+	@cln = Perforce change number contributing to the merge.
+	Exit status:
+	0 = Merge completed trivially (with no-ops and copies only).
+	1 = Merge completed without conflict.
+	2 = Merge conflicts must be resolved.
+	3 = File deletions were detected and should be reviewed.
+	4 = Failed to get a new change number from Perforce.
+	5 = User exited from break-out shell with non-zero status.
+	6 = Commit to Perforce failed.
+	other = error condition.
+	EOF
+	exit 0
+fi
+
+#if [[ $chnumsafter -ne 0 && $chgnumsskip -ne 0 ]]
+#then
+#	errmsg "The -A and -F options are mutually exclusive."
+#	ok=0
+#fi
+
+if [[ $# -lt 1 ]]
+then
+	errmsg "No \"from\" branch was specified."
+	ok=0
+elif [[ $# -lt 2 ]]
+then
+	errmsg "No \"to\" branch was specified."
+	ok=0
+elif [[ $# -lt 3 ]]
+then
+	errmsg "No change number was specified."
+	ok=0
+elif [[ $# -gt 3 ]]
+then
+	errmsg "Unknown arguments given after the change number."
+	ok=0
+fi
+
+from="$1"
+to="$2"
+cln="$3"
+
+# Verify that the log directory exists.
+
+if [[ "x$logparent" = "x" ]]
+then
+	errmsg "No log directory was specified on command line or in \$LOGDIR"
+	ok=0
+elif [[ ! -d "$logparent" ]]
+then
+	errmsg "Log directory $logparent does not exist."
+	ok=0
+elif [[ ! -w "$logparent" || ! -r "$logparent" || ! -x "$logparent" ]]
+then
+	errmsg "Permissions are incorrect for log directory $logparent"
+	ok=0
+fi
+
+# Verify that P4PORT is set.
+
+if [[ "x$P4PORT" = x ]]
+then
+	errmsg "P4PORT is not set in the environment."
+	ok=0
+elif ! expr "x$P4PORT" : 'x[a-zA-Z0-9._-]*\:[1-9][0-9]*$' > /dev/null
+then
+	errmsg "P4PORT environment variable is invalid."
+	ok=0
+fi
+
+if [[ $ok -eq 0 ]]
+then
+	errmsg "Basic set-up is incomplete."
+	exit 99
+fi
+
+# Verify that the Perforce client and workspace exist.
+
+if ! isClient -q "$client"
+then
+	errmsg "$client is not a Perforce client"
+	exit 99
+else
+	export P4CLIENT="$client"
+fi
+
+sandbox=$(clientRoot "$client")
+if [[ $? -ne 0 || ! -d "$sandbox" || ! -r "$sandbox" || ! -w "$sandbox" || \
+      ! -x "$sandbox" ]]
+then
+	errmsg "Workspace of client $client is not accessible."
+	ok=0
+fi
+
+# Verify that the host is a DBC host, and that the Perforce client is
+# in the DBC filesystem.
+
+if ! isdbc "$client"
+then
+	errmsg "Merge must run on a DBC host in a workspace in a DBC filesystem."
+	ok=0
+fi
+
+# Verify that the "from" branch is real.  Note that "main" has no branch spec.
+
+if ! isBranch "$from"
+then
+	warn "\"From\" branch $from has no branch spec, but that might be okay."
+fi
+
+# Verify that the "to" branch is real.  Note that "main" has no branch spec.
+
+if ! isBranch "$to"
+then
+	warn "\"To\" branch $to has no branch spec, but that might be okay."
+fi
+
+# Verify that the change number is real.
+
+if ! isChange -q "$cln"
+then
+	errmsg "Change number $cln is invalid."
+	ok=0
+fi
+
+if [[ $ok -eq 0 ]]
+then
+	errmsg "Command line parameters are incorrect."
+	exit 99
+fi
+
+# Verify that the branches have a parent/child relationship.
+
+if ! isParentBranch -q "$from" "$to"
+then
+	if ! isParentBranch -q "$to" "$from"
+	then
+		errmsg "Branches $from and $to do not have a parent/child relationship."
+		ok=0
+	else
+		infomsg "YOU MAY IGNORE AN ERROR MESSAGE FROM isParentBranch ABOVE."
+		infomsg "Branch $to is the parent of $from"
+	fi
+else
+	infomsg "Branch $from is the parent of $to"
+fi
+
+# Verify that the Perforce client is configured for the target branch.
+
+# We do this by comparing the appropriate branch spec against the client
+# spec.  We use the fromto2branchr script to identify the branch spec and
+# direction, and invoke clientBranch accordingly.
+
+out=( $( fromto2branchr -q "$from" "$to" ) )
+if [[ $? -eq 0 ]]
+then
+	branchspec="${out[0]}"
+	rev="${out[1]}"
+	if [[ "x$rev" != "x-r" ]]
+	then
+		revrev="-r"
+		clientBranch "$client" "$branchspec"
+	else
+		revrev=-
+		clientBranch -p "$client" "$branchspec"
+	fi
+	st=$?
+	if [[ $st -eq 0 ]]
+	then
+		infomsg "Perforce client $client is fully configured for branch $to"
+	elif [[ $st -eq 1 && $popt -ne 0 ]]
+	then
+		warn "Perforce client $client is partially configured for branch $to"
+	elif [[ $st -eq 1 ]]
+	then
+		errmsg "Perforce client $client is partially configured for branch $to"
+		ok=0
+	else
+		errmsg "Perforce client $client is not configured for branch $to"
+		ok=0
+	fi
+else
+	errmsg "Could not identify the proper branch spec and direction."
+	ok=0
+fi
+
+# Verify that the cln change record is fully in the "from" branch.
+
+chBr=$(changePaths "$cln" | cut '-d ' -f1 | cbsNames | cut '-d ' -f1 | sort -u)
+if [[ "x$chBr" != "x$from" ]]
+then
+	errmsg "Change $cln is not fully contained in branch $from"
+	ok=0
+fi
+
+# Verify that the Perforce client is clean.
+
+openFiles=$(p4 -c "$client" opened | wc -l)
+if [[ $openFiles -ne 0 ]]
+then
+	errmsg "Perforce client $client contains open files:"
+	p4 -c "$client" opened
+	ok=0
+fi
+
+if [[ $ok -eq 0 ]]
+then
+	errmsg "Command line parameter values did not validate."
+	exit 99
+fi
+
+# Set up for temporary files.
+
+td=${TMPDIR:-/tmp}/$me.$$
+
+clean() {
+	rm -rf "$td"
+}
+
+trap clean 0
+
+rm -rf "$td" && mkdir -p "$td"
+if [[ $? -ne 0 ]]
+then
+	errmsg "Failed to create temporary directory $td"
+	exit 99
+fi
+
+# Create a log directory for this integration.
+
+if [[ "x$logbase" = "x" ]]
+then
+	logbase=$( date "+%Y-%m-%d-%H:%M:%S" )
+fi
+logdir="$logparent/$logbase"
+mkdir "$logdir"
+if [[ $? -ne 0 || ! -d "$logdir" ]]
+then
+	errmsg "Failed to create log directory $logdir"
+	exit 99
+fi
+infomsg "The log directory is $logdir"
+
+# Set up my log summary file.
+
+logfile="$logdir/$me.log"
+> "$logfile"
+
+# Write environment info to log
+
+infomsg "Commencing CBS merge at $(date)"
+infomsg "Command line arguments:  $0 $*"
+infomsg "Host:  $(hostname)"
+infomsg "Working directory:  $PWD"
+infomsg "User:  $(id -a)"
+infomsg "Environment:"
+env | LANG=C sort | infostream
+infomsg "End of environment."
+infomsg "Perforce client spec for client $client:"
+p4 -c "$client" client -o | infostream
+infomsg "End of client spec."
+infomsg "Perforce branch spec for branch $branchspec:"
+p4 branch -o "$branchspec" | infostream
+infomsg "End of branch spec."
+
+# Thin wrapper around the runlog script to standardize log naming
+# conventions.
+
+# Usage:
+# runcmd logname cmd [arg...]
+# logname = basename of log files in $logdir, produces .out and .err files
+# cmd = command to run
+# arg = command line arguments
+
+runoutlog() {
+	echo "$logdir/$1.out"
+}
+
+runerrlog() {
+	echo "$logdir/$1.err"
+}
+
+runsummary() {
+	echo "$logdir/$1.summary"
+}
+
+runcmd() {
+	n=$1
+	shift
+	echo "$me:  TRACE:  $*" | tee -a "$logfile"
+	runlog $(runoutlog "$n") $(runerrlog "$n") "$@"
+	st=$?
+	echo "$me:  STATUS:  $st" | tee -a "$logfile"
+	echo "$me:  STDOUT:  "$(runoutlog "$n") | tee -a "$logfile"
+	echo "$me:  STDERR:  "$(runerrlog "$n") | tee -a "$logfile"
+	return $st
+}
+
+# Initiate collection of interesting change numbers in the background
+# because the integratedChgNo script has a long runtime (several minutes).
+# Harvest its output later, along with that of submittedChgNo for use in
+# the commit record.
+
+getChgNumbers() {
+	if [[ "x$1" = "x-x" ]]
+	then
+		xopt="-x"
+		shift
+	else
+		xopt=
+	fi
+	from="$1"
+	to="$2"
+	branchspec="$3"
+	rev="$4"
+	cln="$5"
+	shift 5
+	if [[ "x$rev" = "x-r" ]]
+	then
+		popt="-p"
+	else
+		popt=
+	fi
+
+	tf1="$td/getChgNumbers1"
+	tf2="$td/getChgNumbers2"
+	if [[ "x$xopt" != "x" ]]
+	then
+		cat - | tee "$tf1" | integratedFiles -x "$from" "$to" "$@" > "$tf2"
+	else
+		tf1="/dev/null"
+		> "$tf1"
+		integratedFiles "$from" "$to" "$@" > "$tf2"
+	fi
+	out=( $(integratedChgNo -ft -l $(runoutlog p4integrated) $xopt "$from" "$to" "$@" < "$tf1") )
+	toChg="${out[0]}"
+	fromChg="${out[1]}"
+	echo "Last integration from: $from $fromChg"
+	echo "Last integration to: $to $toChg"
+	echo "Changes since:"
+
+	if [[ "x$fromChg" != "x-" && "x$toChg" != "x-" ]]
+	then
+		submittedChgNo $popt -x "$branchspec" "$fromChg" "$cln" < "$tf2" |
+		fgrep -vx "$fromChg" |
+		sed -e 's/^/	/'
+	fi
+}
+
+# Function to harvest the change numbers that have been gathered by the
+# getChgNumbers function.  Add them to the future pending change description.
+
+harvestChgNo() {
+	chgnumlog="$1"
+	client="$2"
+	newcln="$3"
+	placeholder="$4"
+
+	tfile1="$td/waithist1"
+	tfile2="$td/waithist2"
+
+	sed -e 's/^/	/' "$(runsummary $chgnumlog)" > "$tfile1"
+	p4 -c "$client" change -o ${newcln#@} |
+	sed -e "/$placeholder/r $tfile1" -e "/$placeholder/d" > "$tfile2"
+	infomsg "Change spec updated with integrated change numbers:"
+	infostream < "$tfile2"
+	p4 -c "$client" change -i < "$tfile2"
+	return $?
+}
+
+# Function to harvest the change numbers that have been computing in the
+# background.  Add them to the future pending change description.
+
+#waitHist() {
+#	infomsg "Waiting for chgno computations."
+#	wait %1
+#	stx=$?
+#	if [[ $stx -ne 0 ]]
+#	then
+#		errmsg "Failed to read integration history."
+#		return $stx
+#	fi
+#
+#	harvestChgNo "$@"
+#	return $?
+#}
+
+#chgnumlog=chgnums
+#if [[ $chgnumsskip -eq 0 ]]
+#then
+#	infomsg "Computing list of contributing change numbers."
+#	infomsg "Running this command in the background:"
+#	infomsg "getChgNumbers $from $to $branchspec $revrev $cln"
+#	getChgNumbers "$from" "$to" "$branchspec" "$revrev" "$cln" > $(runsummary $chgnumlog) 2> $(runerrlog $chgnumlog) &
+#else
+#	infomsg "Skipping computing list of contributing change numbers."
+#	> $(runsummary $chgnumlog)
+#	> $(runerrlog $chgnumlog)
+#fi
+
+# Sync the client
+
+runcmd sync p4 -c "$client" sync
+if [[ $? -ne 0 ]]
+then
+	errmsg "Failed to bring the Perforce client $client up to date."
+	exit 99
+fi
+
+# Attempt an integration.
+
+exst=0
+infomsg "Attempting integration"
+currlog="cbsIntegrate1"
+runcmd $currlog cbsIntegrate1 $intopts "$client" "$from" "$to" "$cln"
+if [[ $? -ne 0 ]]
+then
+	errmsg "First integration failed, reported by Perforce."
+	exit 99
+fi
+
+echo "$me:  SUMMARY:  $(runsummary $currlog)"
+integrate.awk < $(runoutlog $currlog) | tee $(runsummary $currlog)
+intst="${PIPESTATUS[0]}"
+if [[ $intst -eq 0 ]]
+then
+	# First integration completed successfully
+	infomsg "Integration went smoothly"
+elif [[ $intst -eq 1 ]]
+then
+	warn "File deletion needs review."
+	exst=3
+else
+	# First integration failed
+	errmsg "First integration failed, found in log."
+	exit 99
+fi
+
+# Attempt the first resolve
+
+infomsg "Attempting first resolve"
+currlog="p4resolve-as"
+runcmd $currlog p4 -c "$client" resolve -as
+if [[ $? -ne 0 ]]
+then
+	errmsg "First resolved failed, reported by Perforce"
+	exit 99
+fi
+
+echo "$me:  SUMMARY:  $(runsummary $currlog)"
+resolve.awk < $(runoutlog $currlog) | tee $(runsummary $currlog) | infostream
+resst=${PIPESTATUS[0]}
+if [[ $resst -eq 0 ]]
+then
+	infomsg "First resolve completed trivially."
+else
+	infomsg "First resolve requires additional action."
+	test $exst -eq 0 && exst=2
+fi
+
+# Attempt the second resolve
+
+if [[ $resst -ne 0 ]]
+then
+	infomsg "Attempting second resolve"
+	currlog="p4resolve-am"
+	runcmd $currlog p4 -c "$client" resolve -am
+	if [[ $? -ne 0 ]]
+	then
+		errmsg "Second resolved failed, reported by Perforce"
+		exit 99
+	fi
+
+	echo "$me:  SUMMARY:  $(runsummary $currlog)"
+	resolve.awk < $(runoutlog $currlog) | tee $(runsummary $currlog) | infostream
+	resst=${PIPESTATUS[0]}
+	if [[ $resst -eq 0 ]]
+	then
+		infomsg "Second resolve completed trivially."
+	elif [[ $resst -eq 1 ]]
+	then
+		infomsg "Second resolve completed without conflict."
+		test $exst -eq 0 && exst=1
+	else
+		infomsg "Second resolve requires additional action."
+		test $exst -eq 0 && exst=2
+	fi
+fi
+
+# Obtain a Perforce change number.  Insert the info we have so far
+# into the change description.
+
+chgfile1="$td/change1"
+chgfile2="$td/change2"
+chgfile3="$td/change3"
+chgfile4="$td/change4"
+
+srch1="<put a good 1-line overview here!>"
+srch2="<put your multi-line change description here!>"
+srch3="Reviewed by: <required>"
+repl1="Integrate $cln from $from to $to"
+repl2="Automated cbsMerge1 merge of $cln from $from to $to"
+repl3="Reviewed by: nobody"
+placeholder="<Change numbers will be added here automatically!>"
+
+p4 -c "$client" change -o > "$chgfile1"
+sed -e "s/${srch1}/${repl1}/" \
+    -e "s/${srch2}/${repl2}\\
+	${placeholder}\\
+/" \
+    -e "s/${srch3}/${repl3}/" \
+    "$chgfile1" > "$chgfile2"
+if cmp -s "$chgfile1" "$chgfile2"
+then
+	sed -e "/^Description:$/a\\
+	$repl1\\
+\\
+	$repl2\\
+	${placeholder}\\
+" \
+	    -e "s/${srch3}/${repl3}/" \
+	    "$chgfile1" > "$chgfile2"
+fi
+
+(
+	echo
+	sed -e '0,/^Integration summary:/d' < $(runsummary cbsIntegrate1)
+        sed -e '0,/^Resolution summary:/d' -e '$d' < $(runsummary p4resolve-as)
+) |
+sed -e 's/^./	&/' > "$chgfile3"
+sed -e "/$placeholder/r $chgfile3" "$chgfile2" > "$chgfile4"
+
+currlog="p4change"
+runcmd $currlog p4 -c "$client" change -i < "$chgfile4"
+if [[ $? -ne 0 ]]
+then
+	errmsg "Failed to get a new change number from Perforce."
+	exst=4
+fi
+chmsg=$(grep "^Change [1-9][0-9]* created[. ]" $(runoutlog $currlog))
+newcln=@$(expr "x$chmsg" : 'xChange \([1-9][0-9]*\) created[. ]' 2> /dev/null)
+if [[ "x$newcln" = "x@" ]]
+then
+	errmsg "Perforce did not return a new change number."
+	exst=4
+else
+	infomsg "Tentative new change number is $newcln"
+fi
+
+
+# Harvest the change numbers that have been computing in the background.
+# Add them to the pending change description, if -A and -F were omitted from
+# the command line.
+
+#if [[ $chgnumsskip -eq 0 && $chnumsafter -eq 0 ]]
+#then
+#	waitHist "$chgnumlog" "$client" "$newcln" "$placeholder"
+#fi
+
+# Launch an interactive shell to review the results.
+
+infomsg "I will now launch an interactive shell."
+infostream < $(runsummary p4resolve-as)
+infostream < $(runsummary cbsIntegrate1)
+infomsg "p4 client = $client"
+infomsg "New p4 change record = $newcln"
+infomsg "Use \"exit 0\" when your review is completed, or"
+infomsg "\"exit 1\" to terminate the integration without committing."
+
+if [[ "x$SHELL" = "x" ]]
+then
+	export SHELL=/bin/bash
+fi
+
+if [[ "x$SHELL" = "xbash" || "x${SHELL##*/}" = "xbash" ]]
+then
+	profile="$td/bashrc"
+	cat <<-EOF > "$profile"
+	export CBSMERGE1="$newcln"
+	export P4CLIENT="$client"
+	export PS1="$me:\$PS1"
+	test -f $HOME/.bashrc && . $HOME/.bashrc || :
+	EOF
+	$SHELL --rcfile "$profile"
+else
+	export CBSMERGE1="$newcln"
+	export P4CLIENT=$client
+	$SHELL
+fi
+
+if [[ $? -ne 0 ]]
+then
+	errmsg "Interactive shell exited with non-zero status."
+	exst=5
+fi
+
+# Get confirmation from the user to submit the result, if submission is
+# possible.
+
+if [[ $submitskip -eq 0 && $exst -le 3 ]]
+then
+	submitskip=1	# For EOF in select below
+	msg="Select one of the following options to continue:"
+	infomsg "$msg"
+	select r in submit abort
+	do
+		case "$r" in
+		submit)	submitskip=0; break;;
+		abort)	submitskip=1; break;;
+		*)	infomsg "Reply $REPLY is invalid."
+			infomsg "$msg";;
+		esac
+	done
+fi
+
+# Harvest the change numbers that have been computing in the background.
+# Add them to the pending change description, if -A was omitted from the
+# command line, but -F was given.
+
+#if [[ $chgnumsskip -eq 0 && $chnumsafter -ne 0 ]]
+#then
+#	waitHist "$chgnumlog" "$client" "$newcln" "$placeholder"
+#fi
+
+chgnumlog=chgnums
+if [[ $chgnumsskip -eq 0 ]]
+then
+	infomsg "Computing list of contributing change numbers."
+	infomsg "getChgNumbers -x $from $to $branchspec $revrev $cln"
+	p4 -c "$client" opened |
+	sed -e 's/#[1-9][0-9]* - .*$//' |
+	getChgNumbers -x "$from" "$to" "$branchspec" "$revrev" "$cln" > $(runsummary $chgnumlog) 2> $(runerrlog $chgnumlog)
+	infomsg "harvestChgNo $chgnumlog $client $newcln $placeholder"
+	harvestChgNo "$chgnumlog" "$client" "$newcln" "$placeholder"
+else
+	infomsg "Skipping computing list of contributing change numbers."
+	> $(runsummary $chgnumlog)
+	> $(runerrlog $chgnumlog)
+fi
+
+
+# Submit the result to Perforce
+
+currlog="submit"
+actualcln="None"
+if [[ $submitskip -eq 0 && $exst -le 3 ]]
+then
+	p4 change "${newcln#@}"
+	infomsg "Submitting change @${newcln#@} to Perforce."
+	runcmd "$currlog" p4 submit -c "${newcln#@}"
+	st=$?
+
+	datestamp=$(TZ=UTC date "+%Y-%m-%d %H:%M:%S %Z")
+	epochtime=$(TZ=UTC date "+%s")
+
+	if [[ $st -ne 0 ]]
+	then
+		errmsg "Submission to Perforce failed:  $st"
+		exst=6
+	else
+		line=$(grep '^Change [1-9][0-9]* .*submitted' $(runoutlog $currlog) |
+		       tail -1)
+		tactualcln=$( ( expr "x$line" : "xChange \([1-9][0-9]*\) submitted" 2> /dev/null ||
+		             expr "x$line" : "xChange [1-9][0-9]* renamed change \([1-9][0-9]*\) and submitted" 2> /dev/null ) | tail -1 )
+		if [[ $? -eq 0 ]]
+		then
+			actualcln="@$tactualcln"
+		else
+			errmsg "Submission to Perforce failed to yield an actual CLN:  $line"
+			errmsg "Recording \"$actualcln\" in JSON file."
+			exst=6
+		fi
+	fi
+elif [[ $submitskip -ne 0 ]]
+then
+	datestamp=$(TZ=UTC date "+%Y-%m-%d %H:%M:%S %Z")
+	epochtime=$(TZ=UTC date "+%s")
+
+	errmsg "Submit skipped due to -S option."
+	exst=6
+else
+	datestamp=$(TZ=UTC date "+%Y-%m-%d %H:%M:%S %Z")
+	epochtime=$(TZ=UTC date "+%s")
+
+	errmsg "Submit skipped due to prior errors."
+fi
+
+# Given a CLN, this function writes its times stamp to stdout in both the
+# Unix epoch time format and in quoted "YYYY-MM-DD hh:mm:ss UTC" format.
+# Note that, although the timestamp is quoted, assignment to an array
+# still yields four elements.
+
+clntime() {
+	test "x$1" = "xNone" -o "x$1" = "x-" -o "x$1" = "x(not submitted)" &&
+		return 1
+	tt=( $(p4 describe -s "${1#@}" | head -1 | cut '-d ' -f2,6,7) )
+	if [[ ${PIPESTATUS[0]} -ne 0 || "x$1" != "x@${tt[0]}" ]]
+	then
+		return 1
+	fi
+	z=$(date '+%Z')
+	s=$(TZ=UTC date -d "${tt[1]} ${tt[2]} $z" "+%Y-%m-%d %H:%M:%S %Z")
+	e=$(TZ=UTC date -d "${tt[1]} ${tt[2]} $z" "+%s")
+	echo "$e" "$s"
+}
+
+# Given a CLN, create a JSON format triple that includes the CLN, timestamp,
+# and epoch time.
+
+clntriple() {
+	tt=( $( clntime "$1" ) )
+	if [[ $? -eq 0 ]]
+	then
+		echo "{ \"cln\": \"$1\", \"utc-ymd-time\": \"${tt[1]} ${tt[2]} ${tt[3]}\", \"epoch-time\": \"${tt[0]}\" }"
+		return 0
+	else
+		echo '"None"'
+		return 1
+	fi
+}
+
+# Generate JSON
+
+# Data include:
+# Perforce instance ($P4PORT value, as URL)
+# Perforce client ($P4CLIENT value)
+# Source branch ($from)
+# Target branch ($to)
+# Contributing cln ($cln)
+# Preliminary result cln ($newcln)
+# Actual result cln ($actualcln)
+# Prior integration contributing cln ($fromchg)
+# Prior integration result cln ($tochg)
+# List of contributing branch clns (from $chgnumlog.summary file)
+
+infomsg "Writing JSON structure."
+
+fromchg=$( grep '^Last integration from:' $(runsummary $chgnumlog) | cut '-d ' -f5 )
+tochg=$( grep '^Last integration to:' $(runsummary $chgnumlog) | cut '-d ' -f5 )
+
+(
+	cat <<-EOF
+	{
+	  "cbsmergedb-version": "1",
+	  "scm": "p4://$P4PORT/",
+	  "workspace": "$P4CLIENT",
+	  "from-branch": "$from",
+	  "to-branch": "$to",
+	  "from-cln":  "$cln",
+	  "prelim-to-cln":  "$newcln",
+	  "to-cln":  "$actualcln",
+	  "prior-from-cln":  $( clntriple $fromchg ),
+	  "prior-to-cln":  $( clntriple $tochg ),
+	  "utc-ymd-time": "$datestamp",
+	  "epoch-time": "$epochtime",
+	  "contributors": [
+	EOF
+	sed -e '0,/^Changes since:$/d' $(runsummary $chgnumlog) |
+	while read i
+	do
+		echo "    $( clntriple $i ),"
+	done |
+	sed -e '$s/,$//'
+	cat <<-EOF
+	  ]
+	}
+	EOF
+) > "$logdir/json"
+
+# Exit with an appropriate diagnostic.
+
+case $exst in
+0)	infomsg "Merge completed.";;
+1)	warn "Merge completed with trivial or automatic resolution.";;
+2)	warn "Merge completed with content conflict resolution.";;
+3)	warn "Merge completed with add or remove conflict resolution.";;
+4)	errmsg "Failed to get change number from Perforce, manual recovery is needed.";;
+5)	errmsg "User exited from break-out shell with non-zero status.";;
+6)	errmsg "Submission to Perforce failed or skipped.";;
+*)	errmsg "Merge failed and manual recovery is needed.";;
+esac
+
+exit $exst
+
